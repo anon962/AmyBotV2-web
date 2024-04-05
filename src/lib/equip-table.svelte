@@ -15,7 +15,7 @@
     </h1>
 
     <div class="collapse-content min-w-0">
-        <div class="overflow-auto max-h-[100vh] h-full">
+        <div class="overflow-auto max-h-[90vh] h-full">
             <table class="table table-sm table-pin-rows">
                 <thead>
                     <tr class="bg-base-200">
@@ -32,7 +32,7 @@
                     {#each data as eq}
                         <tr>
                             <td>{eq.price}</td>
-                            <td>{eq.stats.join('\n')}</td>
+                            <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
                             <td>{eq.level}</td>
                             <td>{eq.auction.end_time}</td>
                             <td>{eq.buyer}</td>
