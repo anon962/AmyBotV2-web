@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host 0.0.0.0",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "npm run test:integration && npm run test:unit",
@@ -40,6 +40,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@tanstack/svelte-query": "^5.28.13"
+		"@tanstack/svelte-query": "^5.28.13",
+		"radash": "^12.1.0"
 	}
 }
