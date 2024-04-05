@@ -3,7 +3,7 @@
     import { getEquipSearchContext, setEquipSearchContext } from '$lib/equip-search-context'
     import EquipTable from '$lib/equip-table.svelte'
     import { createQuery } from '@tanstack/svelte-query'
-    import { group } from 'radash'
+    import { group, sort } from 'radash'
     import { derived } from 'svelte/store'
 
     setEquipSearchContext()
@@ -27,12 +27,16 @@
     })
 
     const groupedByName = derived(query, (query) => {
-        let byName = group(query.data ?? [], (eq) => eq.name)
-        return Object.values(byName) as Equip[][]
+        const groups = group(query.data ?? [], (eq) => eq.name)
+        let result = Object.values(groups) as Equip[][]
+
+        result = sort(result, xs => xs.length, true)
+
+        return result
     })
 </script>
 
-<div class="overflow-y-auto p-4 flex flex-col gap-4">
+<div class="p-4 flex flex-col gap-4">
     {#if $query.isSuccess}
         {#each $groupedByName as equips}
             <EquipTable data={equips} />

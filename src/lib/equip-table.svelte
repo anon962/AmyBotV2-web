@@ -9,33 +9,46 @@
 <div class="collapse collapse-plus bg-base-200">
     <input type="checkbox" {name} />
 
-    <h2 class="collapse-title">{data[0].name}</h2>
+    <h1 class="collapse-title flex gap-2">
+        <span class="min-w-8">({data.length})</span>
+        <span>{data[0].name}</span>
+    </h1>
 
-    <div class="collapse-content overflow-auto min-h-0 h-full max-h-[66vh]">
-        <table class="table table-sm table-pin-rows min-w-0">
-            <thead>
-                <tr class="bg-base-200">
-                    <td>Price</td>
-                    <td>Stats</td>
-                    <td>Level</td>
-                    <td>Auction / Date</td>
-                    <td>Buyer</td>
-                    <td>Seller</td>
-                </tr>
-            </thead>
-
-            <tbody>
-                {#each data as eq}
-                    <tr>
-                        <td>{eq.price}</td>
-                        <td>{eq.stats.join('\n')}</td>
-                        <td>{eq.level}</td>
-                        <td>{eq.auction.end_time}</td>
-                        <td>{eq.buyer}</td>
-                        <td>{eq.seller}</td>
+    <div class="collapse-content min-w-0">
+        <div class="overflow-auto max-h-[100vh] h-full">
+            <table class="table table-sm table-pin-rows">
+                <thead>
+                    <tr class="bg-base-200">
+                        <td>Price</td>
+                        <td>Stats</td>
+                        <td>Level</td>
+                        <td>Auction / Date</td>
+                        <td>Buyer</td>
+                        <td>Seller</td>
                     </tr>
-                {/each}
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    {#each data as eq}
+                        <tr>
+                            <td>{eq.price}</td>
+                            <td>{eq.stats.join('\n')}</td>
+                            <td>{eq.level}</td>
+                            <td>{eq.auction.end_time}</td>
+                            <td>{eq.buyer}</td>
+                            <td>{eq.seller}</td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<style lang="postcss">
+    input,
+    h1 {
+        /* Text will be offcenter unless the invisible input and its label have same text size */
+        @apply min-h-0 text-sm;
+    }
+</style>
