@@ -1,14 +1,14 @@
 <script lang="ts">
     import { sort } from 'radash'
-    import type { Equip } from './equip'
+    import type { EquipWithAuctionType } from './equip'
 
-    export let data: Equip[]
+    export let data: EquipWithAuctionType[]
 
-    const dataSorted = sort(data, eq => eq.price, true)
+    const dataSorted = sort(data, (eq) => eq.price, true)
 
     const name = data[0].name
 
-    function humanizePrice(val: number, precision=1): string {
+    function humanizePrice(val: number, precision = 1): string {
         let [factor, unit] = [1, '']
 
         if (val >= 1000 ** 2) {
@@ -19,18 +19,48 @@
             unit = 'k'
         } else {
             factor = 1
-            unit = "c"
+            unit = 'c'
         }
 
         let afterDiv = (val / factor).toFixed(precision)
 
         // Only show trailing zeros if price is in the mils
         //   eg "26.0m" is okay but "26.0k" is ugly
-        if (afterDiv.endsWith(".0") && unit != "m") {
-            afterDiv = afterDiv.replace(".0", "")
+        if (afterDiv.endsWith('.0') && unit != 'm') {
+            afterDiv = afterDiv.replace('.0', '')
         }
 
         return `${afterDiv}${unit}`
+    }
+
+    function humanizeDate(t: number) {
+        if (t === undefined) {
+            return ''
+        }
+
+        const date = new Date(t * 1000)
+
+        const year = date.getFullYear().toString().padStart(2, '0')
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+
+        return `${year}-${month}-${day}`
+    }
+
+    function humanizeAuction(auction: EquipWithAuctionType['auction']): string {
+        let numberRaw = auction.title_short ?? auction.title
+        let number = parseInt(numberRaw)
+        let numberString = isNaN(number) ? '???' : number.toString().padStart(3, '0')
+
+        return `${auction.type}${numberString}`
+    }
+
+    function getThreadLink(id_auction: string): string {
+        return `https://forums.e-hentai.org/index.php?showtopic=${id_auction}`
+    }
+
+    function getEquipLink(equip: EquipWithAuctionType): string {
+        return `https://hentaiverse.org/equip/${equip.eid}/${equip.key}`
     }
 </script>
 
@@ -44,27 +74,41 @@
 
     <div class="collapse-content min-w-0">
         <div class="overflow-auto max-h-[80vh] h-full">
-            <table class="table table-zebra table-sm md:table-md table-pin-rows">
+            <table class="table table-zebra table-sm md:table-md table-pin-rows table-pin-cols">
                 <thead>
                     <tr class="bg-base-200">
-                        <td class="text-end max-w-content">Price</td>
+                        <th class="text-end max-w-content bg-inherit">Price</th>
                         <td>Stats</td>
                         <td>Level</td>
-                        <td>Auction / Date</td>
+                        <td>Auction</td>
+                        <td>Date</td>
                         <td>Buyer</td>
                         <td>Seller</td>
+                        <td>Links</td>
                     </tr>
                 </thead>
 
                 <tbody>
                     {#each dataSorted as eq}
                         <tr>
-                            <td class="text-end max-w-content">{humanizePrice(eq.price)}</td>
+                            <th class="text-end max-w-content">{humanizePrice(eq.price)}</th>
                             <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
                             <td>{eq.level}</td>
-                            <td>{eq.auction.end_time}</td>
+                            <td>{humanizeAuction(eq.auction)}</td>
+                            <td>{humanizeDate(eq.auction.end_time ?? eq.auction.start_time)}</td>
                             <td>{eq.buyer}</td>
                             <td>{eq.seller}</td>
+                            <td>
+                                <a class="link" href={getEquipLink(eq)} target="_blank">Equip</a>
+
+                                <br />
+                                <a class="link" href={getThreadLink(eq.id_auction)}>Thread</a>
+
+                                {#if eq.bid_link}
+                                    <br />
+                                    <a class="link" href={eq.bid_link}>Bid</a>
+                                {/if}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
@@ -80,11 +124,13 @@
         @apply min-h-0 text-sm md:text-base;
     }
 
+    /* Alternate color of table rows */
     .table-zebra tbody {
-        @apply bg-neutral;
+        @apply bg-base-100;
+    }
 
-        & tr:nth-child(even) {
-            @apply bg-base-100;
-        }
+    /* Fix missing link styling */
+    .link {
+        color: inherit;
     }
 </style>
