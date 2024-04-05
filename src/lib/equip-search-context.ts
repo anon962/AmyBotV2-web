@@ -17,15 +17,18 @@ export interface EquipSearchParams {
 
 export type EquipSearchValue = {
     params: Readable<Readonly<EquipSearchParams>>,
-    setParams: (params: EquipSearchParams) => void
+    isEmpty: Readable<boolean>
+    raw: Readable<Readonly<URLSearchParams>>
+    setParams: (params: EquipSearchParams) => void,
 }
 
 const KEY = 'equip-search'
 
 export function setEquipSearchContext() {
     let params = derived(page, (pg) => readUrlParams(pg.url.searchParams))
-    let value = { params, setParams }
-    setContext<EquipSearchValue>(KEY, value)
+    let isEmpty = derived(params, params => Object.keys(params).length <= 0)
+    let raw = derived(params, params => setUrlParams(params, new URLSearchParams()))
+    setContext<EquipSearchValue>(KEY, { params, isEmpty, raw, setParams })
 
     function setParams(params: EquipSearchParams) {
         const update = new URL(get(page).url.href)
@@ -45,12 +48,12 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
     let val: string | null = null;
 
     val = url.get("name")
-    if(val) {
+    if (val) {
         params.name = val.split(",")
     }
 
     val = url.get("min_date")
-    if(val) {
+    if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
             params.min_date = parsed
@@ -58,7 +61,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
     }
 
     val = url.get("max_price")
-    if(val) {
+    if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
             params.max_price = parsed
@@ -67,7 +70,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
 
 
     val = url.get("min_price")
-    if(val) {
+    if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
             params.min_price = parsed
@@ -76,7 +79,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
 
 
     val = url.get("max_price")
-    if(val) {
+    if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
             params.max_price = parsed
@@ -84,22 +87,22 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
     }
 
     val = url.get("seller")
-    if(val) {
+    if (val) {
         params.seller = val
     }
 
     val = url.get("seller_partial")
-    if(val) {
+    if (val) {
         params.seller_partial = val
     }
 
     val = url.get("buyer")
-    if(val) {
+    if (val) {
         params.buyer = val
     }
 
     val = url.get("buyer_partial")
-    if(val) {
+    if (val) {
         params.buyer_partial = val
     }
 
