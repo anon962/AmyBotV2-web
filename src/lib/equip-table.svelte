@@ -6,17 +6,17 @@
     const name = data[0].name
 </script>
 
-<div class="collapse collapse-plus bg-base-200">
+<div class="collapse collapse-plus bg-base-200 max-w-[75rem]">
     <input type="checkbox" {name} />
 
-    <h1 class="collapse-title flex gap-2">
-        <span class="min-w-8">({data.length})</span>
+    <h1 class="collapse-title flex gap-3">
+        <span class="min-w-11 text-right">[{data.length}]</span>
         <span>{data[0].name}</span>
     </h1>
 
     <div class="collapse-content min-w-0">
-        <div class="overflow-auto max-h-[90vh] h-full">
-            <table class="table table-sm table-pin-rows">
+        <div class="overflow-auto max-h-[80vh] h-full">
+            <table class="table table-zebra table-sm md:table-md table-pin-rows">
                 <thead>
                     <tr class="bg-base-200">
                         <td>Price</td>
@@ -49,6 +49,14 @@
     input,
     h1 {
         /* Text will be offcenter unless the invisible input and its label have same text size */
-        @apply min-h-0 text-sm;
+        @apply min-h-0 text-sm md:text-base;
+    }
+
+    .table-zebra tbody {
+        @apply bg-neutral;
+
+        & tr:nth-child(even) {
+            @apply bg-base-100;
+        }
     }
 </style>

@@ -36,7 +36,7 @@
     })
 </script>
 
-<div class="p-4 flex flex-col gap-4">
+<div class="p-4 flex flex-col gap-4 items-center">
     {#if $query.isSuccess}
         {#each $groupedByName as equips}
             <EquipTable data={equips} />
