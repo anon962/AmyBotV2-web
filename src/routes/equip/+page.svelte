@@ -4,29 +4,32 @@
     import { getEquipSearchContext, setEquipSearchContext } from '$lib/equip-search-context'
     import EquipTable from '$lib/equip-table.svelte'
     import { group, sort } from 'radash'
-    import { onMount } from 'svelte'
-    import { writable } from 'svelte/store'
+    import type { PageData } from './$types'
+
+    export let data: PageData
 
     setEquipSearchContext()
     const { params, isEmpty, raw, setParams } = getEquipSearchContext()
 
-    const isMounted = writable(false)
-    $: data = doFetch({
+    // If data was loaded during SSR, skip the fetch
+    $: isInitQuery = $raw.toString() === data.initQueryString
+
+    $: query = doFetch({
         params: $raw,
-        skip: !$isMounted || $isEmpty
+        skip: isInitQuery || $isEmpty
     })
 
-    onMount(() => ($isMounted = true))
-
-    // @todo: make this ssr-friendly by pre-fetching in load function
     async function doFetch(opts: { params: URLSearchParams; skip?: boolean }) {
         if (opts.skip) {
             return []
         }
 
         const queryString = opts.params.toString()
-
         const equips = await fetchEquips(queryString)
+        return equips
+    }
+
+    function groupByName(equips: EquipWithAuctionType[]): EquipWithAuctionType[][] {
         const nameMap = group(equips ?? [], (eq) => eq.name)
 
         let groupsByName = Object.values(nameMap) as EquipWithAuctionType[][]
@@ -43,12 +46,18 @@
     <div class="divider"></div>
 
     <div class="flex flex-col gap-4 items-center max-w-[65rem]">
-        {#await data}
-            loading...
-        {:then groups}
-            {#each groups as equips}
-                <EquipTable data={equips} />
+        {#if isInitQuery}
+            {#each groupByName(data.initEquips) as grp}
+                <EquipTable data={grp} />
             {/each}
-        {/await}
+        {:else}
+            {#await query}
+                loading...
+            {:then equips}
+                {#each groupByName(equips) as grp}
+                    <EquipTable data={grp} />
+                {/each}
+            {/await}
+        {/if}
     </div>
 </div>

@@ -45,7 +45,7 @@ export function getEquipSearchContext() {
     return getContext(KEY) as EquipSearchValue
 }
 
-function readUrlParams(url: URLSearchParams): EquipSearchParams {
+export function readUrlParams(url: URLSearchParams): EquipSearchParams {
     let params = {} as EquipSearchParams
 
     let val: string | null = null
@@ -110,7 +110,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
     return params
 }
 
-function setUrlParams(params: EquipSearchParams, url: URLSearchParams): URLSearchParams {
+export function setUrlParams(params: EquipSearchParams, url: URLSearchParams): URLSearchParams {
     if (params.name) {
         url.set('name', params.name.join(','))
     }
