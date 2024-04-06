@@ -1,6 +1,7 @@
 <script lang="ts">
     import { sort } from 'radash'
     import type { EquipWithAuctionType } from './equip'
+    import { getDate } from './utils'
 
     export let data: EquipWithAuctionType[]
 
@@ -34,11 +35,10 @@
     }
 
     function humanizeDate(t: number) {
-        if (t === undefined) {
+        const date = getDate(t * 1000)
+        if (!date) {
             return ''
         }
-
-        const date = new Date(t * 1000)
 
         const year = date.getFullYear().toString().padStart(2, '0')
         const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -64,6 +64,7 @@
     }
 </script>
 
+<!-- @todo: rows should be sortable -->
 <div class="collapse collapse-plus bg-base-200 max-w-[65rem]">
     <input type="checkbox" {name} />
 
