@@ -5,6 +5,9 @@
 
     export let data: EquipWithAuctionType[]
 
+    let container: HTMLElement
+    let checkbox: HTMLInputElement
+
     const dataSorted = sort(data, (eq) => eq.price, true)
 
     const name = data[0].name
@@ -62,58 +65,82 @@
     function getEquipLink(equip: EquipWithAuctionType): string {
         return `https://hentaiverse.org/equip/${equip.eid}/${equip.key}`
     }
+
+    function handleToggle(ev: Event) {
+        if (!checkbox.checked) {
+            return
+        }
+
+        // Wait for expansion to complete
+        setTimeout(() => {
+            container.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+    }
 </script>
 
 <!-- @todo: rows should be sortable -->
-<div class="collapse collapse-plus bg-base-200">
-    <input type="checkbox" {name} />
+<div bind:this={container} class="container pt-4 w-full">
+    <div class="collapse collapse-plus bg-base-200">
+        <input bind:this={checkbox} type="checkbox" {name} on:change={handleToggle} />
 
-    <h1 class="collapse-title flex gap-3">
-        <span class="min-w-11 text-right">[{data.length}]</span>
-        <span>{data[0].name}</span>
-    </h1>
+        <h1 class="collapse-title flex gap-3">
+            <span class="min-w-11 text-right">[{data.length}]</span>
+            <span>{data[0].name}</span>
+        </h1>
 
-    <div class="collapse-content min-w-0">
-        <div class="overflow-auto max-h-[80vh] h-full">
-            <table class="table table-zebra table-sm md:table-md table-pin-rows table-pin-cols">
-                <thead>
-                    <tr class="bg-base-200">
-                        <th class="text-end max-w-content bg-inherit">Price</th>
-                        <td>Stats</td>
-                        <td>Level</td>
-                        <td>Auction</td>
-                        <td>Date</td>
-                        <td>Buyer</td>
-                        <td>Seller</td>
-                        <td>Links</td>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {#each dataSorted as eq}
-                        <tr>
-                            <th class="text-end max-w-content">{humanizePrice(eq.price)}</th>
-                            <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
-                            <td>{eq.level}</td>
-                            <td>{humanizeAuction(eq.auction)}</td>
-                            <td>{humanizeDate(eq.auction.end_time ?? eq.auction.start_time)}</td>
-                            <td>{eq.buyer}</td>
-                            <td>{eq.seller}</td>
-                            <td>
-                                <a class="link" href={getEquipLink(eq)} target="_blank">Equip</a>
-
-                                <br />
-                                <a class="link" href={getThreadLink(eq.id_auction)}>Thread</a>
-
-                                {#if eq.bid_link}
-                                    <br />
-                                    <a class="link" href={eq.bid_link}>Bid</a>
-                                {/if}
-                            </td>
+        <div class="collapse-content min-w-0">
+            <div class="overflow-auto max-h-[80vh] h-full">
+                <table class="table table-zebra table-sm md:table-md table-pin-rows table-pin-cols">
+                    <thead>
+                        <tr class="bg-base-200">
+                            <!-- Only the price header should be stickied, so it should be the only <th> -->
+                            <th class="text-end max-w-content bg-inherit">Price</th>
+                            <td>Stats</td>
+                            <td>Level</td>
+                            <td>Auction</td>
+                            <td>Date</td>
+                            <td>Buyer</td>
+                            <td>Seller</td>
+                            <td>Link</td>
                         </tr>
-                    {/each}
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        {#each dataSorted as eq}
+                            <tr>
+                                <th class="text-end max-w-content">
+                                    {#if eq.bid_link}
+                                        <a class="link" href={eq.bid_link ?? ''}>
+                                            {humanizePrice(eq.price)}
+                                        </a>
+                                    {:else if eq.price > 0}
+                                        {humanizePrice(eq.price)}
+                                    {:else}
+                                        ({humanizePrice(eq.next_bid)})
+                                    {/if}
+                                </th>
+                                <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
+                                <td>{eq.level}</td>
+                                <td>
+                                    <a class="link" href={getThreadLink(eq.id_auction)}>
+                                        {humanizeAuction(eq.auction)}
+                                    </a>
+                                </td>
+                                <td>
+                                    {humanizeDate(eq.auction.end_time ?? eq.auction.start_time)}
+                                </td>
+                                <td>{eq.buyer ?? '-'}</td>
+                                <td>{eq.seller}</td>
+                                <td>
+                                    <a class="link" href={getEquipLink(eq)} target="_blank">
+                                        Link
+                                    </a>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -129,9 +156,22 @@
     .table-zebra tbody {
         @apply bg-base-100;
     }
+    thead > tr > * {
+        @apply bg-base-200;
+    }
 
     /* Fix missing link styling */
     .link {
         color: inherit;
+    }
+
+    /* Shorten animation so we can call scrollIntoView() earlier */
+    .container :global(*) {
+        transition-duration: 0.1s;
+    }
+
+    /* Reduce vertical padding */
+    td {
+        @apply py-2;
     }
 </style>

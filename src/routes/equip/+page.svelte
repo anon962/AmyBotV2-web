@@ -22,7 +22,7 @@
 </script>
 
 <!-- @todo loading skeleton -->
-<div class="flex flex-col items-center p-4 pt-8 gap-4">
+<div class="flex flex-col items-center p-4 pt-8">
     <EquipSearchBar />
 
     <div class="divider"></div>
