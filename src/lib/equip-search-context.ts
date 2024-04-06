@@ -16,23 +16,27 @@ export interface EquipSearchParams {
 }
 
 export type EquipSearchValue = {
-    params: Readable<Readonly<EquipSearchParams>>,
+    params: Readable<Readonly<EquipSearchParams>>
     isEmpty: Readable<boolean>
     raw: Readable<Readonly<URLSearchParams>>
-    setParams: (params: EquipSearchParams) => void,
+
+    setParams: (params: EquipSearchParams) => void
 }
 
 const KEY = 'equip-search'
 
 export function setEquipSearchContext() {
     let params = derived(page, (pg) => readUrlParams(pg.url.searchParams))
-    let isEmpty = derived(params, params => Object.keys(params).length <= 0)
-    let raw = derived(params, params => setUrlParams(params, new URLSearchParams()))
+    let isEmpty = derived(params, (params) => Object.keys(params).length <= 0)
+    let raw = derived(params, (params) => setUrlParams(params, new URLSearchParams()))
     setContext<EquipSearchValue>(KEY, { params, isEmpty, raw, setParams })
 
     function setParams(params: EquipSearchParams) {
-        const update = new URL(get(page).url.href)
+        const current = get(page).url
+
+        const update = new URL(current.origin + current.pathname)
         setUrlParams(params, update.searchParams)
+
         goto(update.href)
     }
 }
@@ -41,18 +45,17 @@ export function getEquipSearchContext() {
     return getContext(KEY) as EquipSearchValue
 }
 
-
 function readUrlParams(url: URLSearchParams): EquipSearchParams {
     let params = {} as EquipSearchParams
 
-    let val: string | null = null;
+    let val: string | null = null
 
-    val = url.get("name")
+    val = url.get('name')
     if (val) {
-        params.name = val.split(",")
+        params.name = val.split(',')
     }
 
-    val = url.get("min_date")
+    val = url.get('min_date')
     if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
@@ -60,7 +63,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
         }
     }
 
-    val = url.get("max_price")
+    val = url.get('max_price')
     if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
@@ -68,8 +71,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
         }
     }
 
-
-    val = url.get("min_price")
+    val = url.get('min_price')
     if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
@@ -77,8 +79,7 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
         }
     }
 
-
-    val = url.get("max_price")
+    val = url.get('max_price')
     if (val) {
         let parsed = parseInt(val)
         if (!isNaN(parsed)) {
@@ -86,22 +87,22 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
         }
     }
 
-    val = url.get("seller")
+    val = url.get('seller')
     if (val) {
         params.seller = val
     }
 
-    val = url.get("seller_partial")
+    val = url.get('seller_partial')
     if (val) {
         params.seller_partial = val
     }
 
-    val = url.get("buyer")
+    val = url.get('buyer')
     if (val) {
         params.buyer = val
     }
 
-    val = url.get("buyer_partial")
+    val = url.get('buyer_partial')
     if (val) {
         params.buyer_partial = val
     }
@@ -111,39 +112,39 @@ function readUrlParams(url: URLSearchParams): EquipSearchParams {
 
 function setUrlParams(params: EquipSearchParams, url: URLSearchParams): URLSearchParams {
     if (params.name) {
-        url.set("name", params.name.join(","))
+        url.set('name', params.name.join(','))
     }
 
     if (params.min_date) {
-        url.set("min_date", params.min_date.toString())
+        url.set('min_date', params.min_date.toString())
     }
 
     if (params.max_date) {
-        url.set("max_date", params.max_date.toString())
+        url.set('max_date', params.max_date.toString())
     }
 
     if (params.min_price) {
-        url.set("min_price", params.min_price.toString())
+        url.set('min_price', params.min_price.toString())
     }
 
     if (params.max_price) {
-        url.set("max_price", params.max_price.toString())
+        url.set('max_price', params.max_price.toString())
     }
 
     if (params.seller) {
-        url.set("seller", params.seller.toString())
+        url.set('seller', params.seller.toString())
     }
 
     if (params.seller_partial) {
-        url.set("seller_partial", params.seller_partial.toString())
+        url.set('seller_partial', params.seller_partial.toString())
     }
 
     if (params.buyer) {
-        url.set("buyer", params.buyer.toString())
+        url.set('buyer', params.buyer.toString())
     }
 
     if (params.buyer_partial) {
-        url.set("buyer_partial", params.buyer_partial.toString())
+        url.set('buyer_partial', params.buyer_partial.toString())
     }
 
     return url

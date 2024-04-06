@@ -111,6 +111,50 @@ function mergeDefaultWithUrlParams(params: EquipSearchParams): EquipForm {
     }
 }
 
+export function formToParams(form: EquipForm): EquipSearchParams {
+    const params: EquipSearchParams = {}
+
+    const d = DEFAULT_EQUIP_FORM
+
+    if (form.name !== d.name) {
+        params.name = form.name.split(' ')
+    }
+
+    const min_date = new Date(form.min_date_year, form.min_date_month, 1)
+    const default_min = new Date(d.min_date_year, d.min_date_month, 1)
+    if (min_date.getTime() !== default_min.getTime()) {
+        params.min_date = min_date.getTime()
+    }
+
+    // month n+1 with day 0 gets us the last day of month n
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
+    const max_date = new Date(form.max_date_year, form.max_date_month + 1, 0)
+    const default_max = new Date(d.max_date_year, d.max_date_month + 1, 0)
+    if (max_date.getTime() !== default_max.getTime()) {
+        params.max_date = max_date.getTime()
+    }
+
+    if (form.min_price !== d.min_price) {
+        params.min_price = form.min_price
+    }
+
+    if (form.max_price !== d.max_price) {
+        params.max_price = form.max_price
+    }
+
+    if (form.seller !== d.seller) {
+        const key = form.seller_is_partial ? 'seller_partial' : 'seller'
+        params[key] = form.seller
+    }
+
+    if (form.buyer !== d.buyer) {
+        const key = form.buyer_is_partial ? 'buyer_partial' : 'buyer'
+        params[key] = form.buyer
+    }
+
+    return params
+}
+
 export const DEFAULT_EQUIP_FORM = {
     name: '',
     min_date_month: 0,

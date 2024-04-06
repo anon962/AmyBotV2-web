@@ -43,10 +43,10 @@
 </script>
 
 <!-- @todo loading skeleton -->
-<div class="flex flex-col items-center p-4">
+<div class="flex flex-col items-center p-4 pt-8 gap-8">
     <EquipSearchBar />
 
-    <div class="p-4 flex flex-col gap-4 items-center">
+    <div class="flex flex-col gap-4 items-center max-w-[65rem]">
         {#if $query.isSuccess}
             {#each $groupedByName as equips}
                 <EquipTable data={equips} />

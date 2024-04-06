@@ -1,20 +1,31 @@
 <script lang="ts">
-    import { onMount } from 'svelte'
-    import { setEquipFormContext } from './equip-form-context/context'
+    import { formToParams, setEquipFormContext } from './equip-form-context/context'
     import { getEquipSearchContext } from './equip-search-context'
 
-    const { params } = getEquipSearchContext()
-    const { register, form } = setEquipFormContext($params)
+    const { params, setParams } = getEquipSearchContext()
+    const { form, register } = setEquipFormContext($params)
 
-    onMount(() => {})
+    function handleSubmit() {
+        const update = formToParams($form)
+        console.log('submitting', $form, update)
+        setParams(update)
+    }
 </script>
 
 <!-- @todo: load initial value from url -->
 <!-- @todo: add other filters inside dialog -->
-<input
-    use:register={'name'}
-    class="input input-bordered w-full max-w-xs"
-    name="name"
-    type="text"
-    placeholder="peerl heimd oak"
-/>
+<form class="w-full max-w-[50rem]" on:submit|preventDefault={handleSubmit}>
+    <input
+        use:register={'name'}
+        class="input input-bordered input-primary w-full"
+        name="name"
+        type="text"
+        placeholder="peerl heimd oak"
+    />
+</form>
+
+<style lang="postcss">
+    input::placeholder {
+        opacity: 0.6;
+    }
+</style>

@@ -65,7 +65,7 @@
 </script>
 
 <!-- @todo: rows should be sortable -->
-<div class="collapse collapse-plus bg-base-200 max-w-[65rem]">
+<div class="collapse collapse-plus bg-base-200">
     <input type="checkbox" {name} />
 
     <h1 class="collapse-title flex gap-3">
