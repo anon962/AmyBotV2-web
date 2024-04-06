@@ -1,14 +1,16 @@
+export type FormInput = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+
 export class FormControl {
-    inputs: HTMLInputElement[] = []
+    inputs: FormInput[] = []
     private subSink: Array<() => void> = []
 
     constructor(public onChange: (val: string) => void) {}
 
-    setValue(val: any) {
+    setValue(val: string) {
         this.inputs.forEach((inp) => (inp.value = val))
     }
 
-    register(inp: HTMLInputElement, initial: string) {
+    register(inp: FormInput, initial: string) {
         inp.value = initial
         this.inputs.push(inp)
 
@@ -18,7 +20,7 @@ export class FormControl {
         this.subSink.push(() => inp.removeEventListener('change', onChange))
     }
 
-    private _onChange(source: HTMLInputElement) {
+    _onChange(source: FormInput) {
         console.log('_onChange', source, source.value)
         this.inputs.filter((inp) => inp !== source).forEach((inp) => (inp.value = source.value))
         this.onChange(source.value)

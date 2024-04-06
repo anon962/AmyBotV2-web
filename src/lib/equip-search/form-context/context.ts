@@ -1,8 +1,15 @@
-import type { EquipSearchParams } from '$lib/equip-search-context'
 import { getDate } from '$lib/utils'
 import { getContext, setContext } from 'svelte'
 import { get, writable, type Readable } from 'svelte/store'
-import { BoolParser, FormControl, IntParser, StringParser, type FormParsers } from './form'
+import type { EquipUrlParams } from '../url-context'
+import {
+    BoolParser,
+    FormControl,
+    IntParser,
+    StringParser,
+    type FormInput,
+    type FormParsers
+} from './form'
 
 /**
  * This context does a few form-related things...
@@ -34,7 +41,7 @@ export type EquipFormValue = {
     form: Readable<EquipForm>
     controls: EquipFormControls
 
-    register: (input: HTMLInputElement, name: keyof EquipForm) => void
+    register: (input: FormInput, name: keyof EquipForm) => void
     destroy: () => void
 }
 
@@ -42,7 +49,7 @@ export type EquipFormControls = Record<keyof EquipForm, FormControl>
 
 const KEY = 'equip-form'
 
-export function setEquipFormContext(initial: EquipSearchParams) {
+export function setEquipFormContext(initial: EquipUrlParams) {
     // Init controls for each form field
     const controls: EquipFormControls = Object.fromEntries(
         Object.keys(DEFAULT_EQUIP_FORM).map((key) => [
@@ -61,7 +68,7 @@ export function setEquipFormContext(initial: EquipSearchParams) {
 
     return value
 
-    function register(input: HTMLInputElement, name: keyof EquipForm) {
+    function register(input: FormInput, name: keyof EquipForm) {
         const val = get(form)[name] as any
         const parser = EQUIP_FORM_PARSERS[name]
         // @ts-ignore
@@ -90,17 +97,20 @@ export function getEquipFormContext() {
     return getContext(KEY) as EquipFormValue
 }
 
-function mergeDefaultWithUrlParams(params: EquipSearchParams): EquipForm {
+function mergeDefaultWithUrlParams(params: EquipUrlParams): EquipForm {
     const d = DEFAULT_EQUIP_FORM
 
     let min_date: Date | null = getDate(params.min_date)
+    let min_date_month = min_date ? min_date.getMonth() + 1 : null
+
     let max_date: Date | null = getDate(params.min_date)
+    let max_date_month = max_date ? max_date.getMonth() + 1 : null
 
     return {
         name: params.name?.join(' ') ?? d.name,
-        min_date_month: min_date?.getMonth() ?? d.min_date_month,
+        min_date_month: min_date_month ?? d.min_date_month,
         min_date_year: min_date?.getFullYear() ?? d.min_date_year,
-        max_date_month: max_date?.getMonth() ?? d.max_date_month,
+        max_date_month: min_date_month ?? d.max_date_month,
         max_date_year: max_date?.getFullYear() ?? d.max_date_year,
         min_price: params.min_price ?? d.min_price,
         max_price: params.max_price ?? d.max_price,
@@ -111,8 +121,8 @@ function mergeDefaultWithUrlParams(params: EquipSearchParams): EquipForm {
     }
 }
 
-export function formToParams(form: EquipForm): EquipSearchParams {
-    const params: EquipSearchParams = {}
+export function formToParams(form: EquipForm): EquipUrlParams {
+    const params: EquipUrlParams = {}
 
     const d = DEFAULT_EQUIP_FORM
 
@@ -120,16 +130,25 @@ export function formToParams(form: EquipForm): EquipSearchParams {
         params.name = form.name.split(' ')
     }
 
-    const min_date = new Date(form.min_date_year, form.min_date_month, 1)
-    const default_min = new Date(d.min_date_year, d.min_date_month, 1)
+    // Form value for month is 1-indexed
+    const min_month = form.min_date_month - 1
+    const min_date = new Date(form.min_date_year, min_month, 1)
+
+    const default_min_month = d.min_date_month - 1
+    const default_min = new Date(d.min_date_year, default_min_month, 1)
+
     if (min_date.getTime() !== default_min.getTime()) {
         params.min_date = min_date.getTime()
     }
 
-    // month n+1 with day 0 gets us the last day of month n
+    // Month n + 1 with day 0 gets us the last day of month n
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
-    const max_date = new Date(form.max_date_year, form.max_date_month + 1, 0)
-    const default_max = new Date(d.max_date_year, d.max_date_month + 1, 0)
+    const max_month = form.max_date_month - 1
+    const max_date = new Date(form.max_date_year, max_month + 1, 0)
+
+    const default_max_month = d.max_date_month - 1
+    const default_max = new Date(d.max_date_year, default_max_month, 0)
+
     if (max_date.getTime() !== default_max.getTime()) {
         params.max_date = max_date.getTime()
     }
@@ -157,9 +176,9 @@ export function formToParams(form: EquipForm): EquipSearchParams {
 
 export const DEFAULT_EQUIP_FORM = {
     name: '',
-    min_date_month: 0,
-    min_date_year: 0,
-    max_date_month: 11,
+    min_date_month: 1,
+    min_date_year: 2016,
+    max_date_month: 12,
     max_date_year: 9999,
     min_price: 0,
     max_price: Infinity,

@@ -1,7 +1,7 @@
 <script lang="ts">
+    import { getDate } from '$lib/utils'
     import { sort } from 'radash'
     import type { EquipWithAuctionType } from './equip'
-    import { getDate } from './utils'
 
     export let data: EquipWithAuctionType[]
 

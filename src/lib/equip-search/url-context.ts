@@ -3,7 +3,7 @@ import { page } from '$app/stores'
 import { getContext, setContext } from 'svelte'
 import { derived, get, type Readable } from 'svelte/store'
 
-export interface EquipSearchParams {
+export interface EquipUrlParams {
     name?: string[]
     min_date?: number
     max_date?: number
@@ -16,37 +16,37 @@ export interface EquipSearchParams {
 }
 
 export type EquipSearchValue = {
-    params: Readable<Readonly<EquipSearchParams>>
+    params: Readable<Readonly<EquipUrlParams>>
     isEmpty: Readable<boolean>
     raw: Readable<Readonly<URLSearchParams>>
 
-    setParams: (params: EquipSearchParams) => void
+    setParams: (params: EquipUrlParams) => void
 }
 
-const KEY = 'equip-search'
+const KEY = 'equip-url'
 
-export function setEquipSearchContext() {
-    let params = derived(page, (pg) => readUrlParams(pg.url.searchParams))
+export function setEquipUrlContext() {
+    let params = derived(page, (pg) => readRawUrlParams(pg.url.searchParams))
     let isEmpty = derived(params, (params) => Object.keys(params).length <= 0)
-    let raw = derived(params, (params) => setUrlParams(params, new URLSearchParams()))
+    let raw = derived(params, (params) => setRawUrlParams(params, new URLSearchParams()))
     setContext<EquipSearchValue>(KEY, { params, isEmpty, raw, setParams })
 
-    function setParams(params: EquipSearchParams) {
+    function setParams(params: EquipUrlParams) {
         const current = get(page).url
 
         const update = new URL(current.origin + current.pathname)
-        setUrlParams(params, update.searchParams)
+        setRawUrlParams(params, update.searchParams)
 
         goto(update.href)
     }
 }
 
-export function getEquipSearchContext() {
+export function getEquipUrlContext() {
     return getContext(KEY) as EquipSearchValue
 }
 
-export function readUrlParams(url: URLSearchParams): EquipSearchParams {
-    let params = {} as EquipSearchParams
+export function readRawUrlParams(url: URLSearchParams): EquipUrlParams {
+    let params = {} as EquipUrlParams
 
     let val: string | null = null
 
@@ -110,7 +110,7 @@ export function readUrlParams(url: URLSearchParams): EquipSearchParams {
     return params
 }
 
-export function setUrlParams(params: EquipSearchParams, url: URLSearchParams): URLSearchParams {
+export function setRawUrlParams(params: EquipUrlParams, url: URLSearchParams): URLSearchParams {
     if (params.name) {
         url.set('name', params.name.join(','))
     }

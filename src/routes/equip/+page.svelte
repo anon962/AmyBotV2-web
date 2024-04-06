@@ -1,15 +1,15 @@
 <script lang="ts">
     import { navigating } from '$app/stores'
-    import { type EquipWithAuctionType } from '$lib/equip'
-    import EquipSearchBar from '$lib/equip-search-bar.svelte'
-    import { setEquipSearchContext } from '$lib/equip-search-context'
-    import EquipTable from '$lib/equip-table.svelte'
+    import { type EquipWithAuctionType } from '$lib/equip-search/equip'
+    import EquipTable from '$lib/equip-search/equip-table.svelte'
+    import SearchBar from '$lib/equip-search/search-bar.svelte'
+    import { setEquipUrlContext } from '$lib/equip-search/url-context'
     import { group, sort } from 'radash'
     import type { PageData } from './$types'
 
     export let data: PageData
 
-    setEquipSearchContext()
+    setEquipUrlContext()
 
     function groupByName(equips: EquipWithAuctionType[]): EquipWithAuctionType[][] {
         const nameMap = group(equips ?? [], (eq) => eq.name)
@@ -23,7 +23,7 @@
 
 <!-- @todo loading skeleton -->
 <div class="flex flex-col items-center p-4 pt-8">
-    <EquipSearchBar />
+    <SearchBar />
 
     <div class="divider"></div>
 

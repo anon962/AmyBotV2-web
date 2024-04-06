@@ -1,19 +1,20 @@
 <script lang="ts">
-    import { formToParams, setEquipFormContext } from './equip-form-context/context'
-    import { getEquipSearchContext } from './equip-search-context'
-    import FilterIcon from './icons/filter-icon.svelte'
+    import FilterIcon from '$lib/icons/filter-icon.svelte'
+    import EquipSearchDialog from './filters-dialog/dialog.svelte'
+    import { formToParams, setEquipFormContext } from './form-context/context'
+    import { getEquipUrlContext } from './url-context'
 
-    const { params, setParams } = getEquipSearchContext()
+    let dialog: HTMLDialogElement
+
+    const { params, setParams } = getEquipUrlContext()
     const { form, register } = setEquipFormContext($params)
 
     function handleSubmit() {
         const update = formToParams($form)
-        console.log('submitting', $form, update)
         setParams(update)
     }
 </script>
 
-<!-- @todo: add other filters inside dialog -->
 <form class="w-full max-w-[50rem]" on:submit|preventDefault={handleSubmit}>
     <label class="w-full px-0 input input-bordered input-primary flex gap-2 items-center">
         <input
@@ -25,12 +26,20 @@
         />
 
         <div class="p-1 h-full">
-            <button on:click|preventDefault type="button" class="btn btn-sm btn-ghost h-full">
+            <button
+                on:click|preventDefault={() => dialog.showModal()}
+                type="button"
+                class="btn btn-sm btn-ghost h-full"
+            >
                 <FilterIcon />
             </button>
         </div>
     </label>
 </form>
+
+<dialog bind:this={dialog} class="modal">
+    <EquipSearchDialog />
+</dialog>
 
 <style lang="postcss">
     input::placeholder {
