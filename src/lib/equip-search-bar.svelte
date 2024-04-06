@@ -12,7 +12,6 @@
     }
 </script>
 
-<!-- @todo: load initial value from url -->
 <!-- @todo: add other filters inside dialog -->
 <form class="w-full max-w-[50rem]" on:submit|preventDefault={handleSubmit}>
     <input

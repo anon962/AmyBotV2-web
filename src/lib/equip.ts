@@ -27,12 +27,12 @@ export interface Equip {
 type AuctionWithType = Equip['auction'] & { type: string }
 export type EquipWithAuctionType = Equip & { auction: AuctionWithType }
 
-export async function fetchEquips(search: URLSearchParams) {
+export async function fetchEquips(query: string) {
     let data: EquipWithAuctionType[] = []
 
     const super_url = new URL(import.meta.env.VITE_API_URL)
     super_url.pathname = 'super/search_equips'
-    super_url.search = search.toString()
+    super_url.search = query
 
     const s_resp = await fetch(super_url)
     const s_data = (await s_resp.json()) as Equip[]
@@ -45,7 +45,7 @@ export async function fetchEquips(search: URLSearchParams) {
 
     const kedama_url = new URL(import.meta.env.VITE_API_URL)
     kedama_url.pathname = 'kedama/search_equips'
-    kedama_url.search = search.toString()
+    kedama_url.search = query
 
     const k_resp = await fetch(kedama_url)
     const k_data = (await k_resp.json()) as Equip[]
