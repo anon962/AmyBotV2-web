@@ -1,4 +1,5 @@
 <script lang="ts">
+    import AsyncLoader from '$lib/async-loader.svelte'
     import { fetchEquips, type EquipWithAuctionType } from '$lib/equip'
     import EquipSearchBar from '$lib/equip-search-bar.svelte'
     import { getEquipSearchContext, setEquipSearchContext } from '$lib/equip-search-context'
@@ -45,19 +46,23 @@
 
     <div class="divider"></div>
 
-    <div class="flex flex-col gap-4 items-center max-w-[65rem]">
-        {#if isInitQuery}
+    <AsyncLoader
+        showOverride={isInitQuery}
+        asyncData={query}
+        classes="flex flex-col gap-4 items-center max-w-[65rem]"
+    >
+        <svelte:fragment slot="override">
             {#each groupByName(data.initEquips) as grp}
                 <EquipTable data={grp} />
             {/each}
-        {:else}
-            {#await query}
-                loading...
-            {:then equips}
-                {#each groupByName(equips) as grp}
-                    <EquipTable data={grp} />
-                {/each}
-            {/await}
-        {/if}
-    </div>
+        </svelte:fragment>
+
+        <svelte:fragment slot="async-load">loading...</svelte:fragment>
+
+        <svelte:fragment slot="async-data" let:data>
+            {#each groupByName(data) as grp}
+                <EquipTable data={grp} />
+            {/each}
+        </svelte:fragment>
+    </AsyncLoader>
 </div>
