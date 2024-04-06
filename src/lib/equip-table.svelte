@@ -13,6 +13,10 @@
     const name = data[0].name
 
     function humanizePrice(val: number, precision = 1): string {
+        if (isNaN(val)) {
+            return '0c'
+        }
+
         let [factor, unit] = [1, '']
 
         if (val >= 1000 ** 2) {
@@ -97,11 +101,12 @@
                             <th class="text-end max-w-content bg-inherit">Price</th>
                             <td>Stats</td>
                             <td>Level</td>
-                            <td>Auction</td>
+                            <td>Link</td>
                             <td>Date</td>
+                            <td>Auction</td>
                             <td>Buyer</td>
                             <td>Seller</td>
-                            <td>Link</td>
+                            <td>ID</td>
                         </tr>
                     </thead>
 
@@ -122,20 +127,21 @@
                                 <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
                                 <td>{eq.level}</td>
                                 <td>
-                                    <a class="link" href={getThreadLink(eq.id_auction)}>
-                                        {humanizeAuction(eq.auction)}
-                                    </a>
-                                </td>
-                                <td>
-                                    {humanizeDate(eq.auction.end_time ?? eq.auction.start_time)}
-                                </td>
-                                <td>{eq.buyer ?? '-'}</td>
-                                <td>{eq.seller}</td>
-                                <td>
                                     <a class="link" href={getEquipLink(eq)} target="_blank">
                                         Link
                                     </a>
                                 </td>
+                                <td class="whitespace-pre">
+                                    {humanizeDate(eq.auction.end_time ?? eq.auction.start_time)}
+                                </td>
+                                <td>
+                                    <a class="link" href={getThreadLink(eq.id_auction)}>
+                                        {humanizeAuction(eq.auction)}
+                                    </a>
+                                </td>
+                                <td>{eq.buyer ?? '-'}</td>
+                                <td>{eq.seller}</td>
+                                <td>{eq.key.slice(0, 4)}</td>
                             </tr>
                         {/each}
                     </tbody>
@@ -146,9 +152,9 @@
 </div>
 
 <style lang="postcss">
+    /* Text will be offcenter unless the invisible input and its label have same text size */
     input,
     h1 {
-        /* Text will be offcenter unless the invisible input and its label have same text size */
         @apply min-h-0 text-sm md:text-base;
     }
 
@@ -171,7 +177,13 @@
     }
 
     /* Reduce vertical padding */
-    td {
-        @apply py-2;
+    td,
+    th {
+        @apply py-1;
+    }
+
+    /* Shrink table text */
+    table td {
+        @apply text-xs md:text-sm;
     }
 </style>
