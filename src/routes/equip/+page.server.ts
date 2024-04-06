@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ url }) => {
     const queryParams = setUrlParams(equipParams, new URLSearchParams())
     const queryString = queryParams.toString()
 
-    const data = await fetchEquips(queryString)
+    const data = queryString.length ? await fetchEquips(queryString) : []
 
     return {
         initQueryString: queryString,
