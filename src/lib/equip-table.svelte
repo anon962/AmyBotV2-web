@@ -9,7 +9,6 @@
     let checkbox: HTMLInputElement
 
     const dataSorted = sort(data, (eq) => eq.price, true)
-
     const name = data[0].name
 
     function humanizePrice(val: number, precision = 1): string {
@@ -70,7 +69,7 @@
         return `https://hentaiverse.org/equip/${equip.eid}/${equip.key}`
     }
 
-    function handleToggle(ev: Event) {
+    function handleToggle() {
         if (!checkbox.checked) {
             return
         }
@@ -185,5 +184,15 @@
     /* Shrink table text */
     table td {
         @apply text-xs md:text-sm;
+    }
+
+    /* Hide accordion contents until expanded 
+     * Otherwise page is super sluggish, especially when opening modals (which causes a reflow for some reason)
+     */
+    .collapse .collapse-content {
+        display: none;
+    }
+    .collapse:has(:checked) .collapse-content {
+        display: block;
     }
 </style>
