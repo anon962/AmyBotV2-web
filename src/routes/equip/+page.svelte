@@ -1,3 +1,8 @@
+<script context="module" lang="ts">
+    type GroupCriteria = 'name' | 'buyer' | 'seller'
+    type EquipAccessor = (eq: EquipWithAuctionType) => string
+</script>
+
 <script lang="ts">
     import { navigating } from '$app/stores'
     import { type EquipWithAuctionType } from '$lib/equip-search/equip'
@@ -5,19 +10,36 @@
     import SearchBar from '$lib/equip-search/search-bar/search-bar.svelte'
     import { setEquipUrlContext } from '$lib/equip-search/url-context'
     import { draw, group, range, sort } from 'radash'
+    import { derived, writable, type Writable } from 'svelte/store'
     import type { PageData } from './$types'
 
     export let data: PageData
 
-    const { isEmpty } = setEquipUrlContext()
+    const { params, isEmpty } = setEquipUrlContext()
 
-    function groupByName(equips: EquipWithAuctionType[]): EquipWithAuctionType[][] {
-        const nameMap = group(equips ?? [], (eq) => eq.name)
+    let groupCriteria: Writable<GroupCriteria> = writable('name')
+    $: {
+        if ($params.seller || $params.seller_partial) {
+            $groupCriteria = 'seller'
+        } else if ($params.buyer || $params.buyer_partial) {
+            $groupCriteria = 'buyer'
+        } else {
+            $groupCriteria = 'name'
+        }
+    }
 
-        let groupsByName = Object.values(nameMap) as EquipWithAuctionType[][]
-        groupsByName = sort(groupsByName, (xs) => xs.length, true)
+    let accessor = derived(groupCriteria, ($groupCriteria) => getEquipAccessor($groupCriteria))
 
-        return groupsByName
+    function groupBy(
+        equips: EquipWithAuctionType[],
+        accessor: EquipAccessor
+    ): EquipWithAuctionType[][] {
+        const grouped = group(equips ?? [], accessor)
+
+        let groupValues = Object.values(grouped) as EquipWithAuctionType[][]
+        groupValues = sort(groupValues, (xs) => xs.length, true)
+
+        return groupValues
     }
 
     function getRandomQuery(): string {
@@ -43,6 +65,17 @@
         const query = `?name=${rarity},${cat}`
         return query
     }
+
+    function getEquipAccessor(criteria: GroupCriteria): EquipAccessor {
+        switch (criteria) {
+            case 'name':
+                return (eq) => eq.name
+            case 'buyer':
+                return (eq) => eq.buyer
+            case 'seller':
+                return (eq) => eq.seller
+        }
+    }
 </script>
 
 <div class="flex flex-col items-center p-4 pt-8">
@@ -52,8 +85,11 @@
 
     <div class="w-full max-w-[90vw] sm:max-w-[1024px] flex flex-col">
         <div class="w-full flex justify-end gap-2">
-            <!-- <label for="group-by" class="text-sm">Group By</label> -->
-            <select name="group-by" class="select select-bordered select-xs">
+            <select
+                name="group-by"
+                class="select select-bordered select-xs"
+                bind:value={$groupCriteria}
+            >
                 <option value="name">Group by equip name</option>
                 <option value="seller">Group by seller</option>
                 <option value="buyer">Group by buyer</option>
@@ -75,8 +111,8 @@
         {:else if !data.initEquips.length}
             No equips found
         {:else}
-            {#each groupByName(data.initEquips) as grp}
-                <EquipTable data={grp} />
+            {#each groupBy(data.initEquips, $accessor) as grp}
+                <EquipTable data={grp} label={$accessor(grp[0])} />
             {/each}
         {/if}
     </div>

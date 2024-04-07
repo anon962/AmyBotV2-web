@@ -4,12 +4,19 @@
     import type { EquipWithAuctionType } from './equip'
 
     export let data: EquipWithAuctionType[]
+    export let label: string
 
     let container: HTMLElement
     let checkbox: HTMLInputElement
 
-    const dataSorted = sort(data, (eq) => eq.price, true)
-    const name = data[0].name
+    $: dataSorted = sort(data, (eq) => eq.price, true)
+
+    // Collapse on data change (ie user changed grouping criteria)
+    $: {
+        if (data && checkbox?.checked) {
+            checkbox.click()
+        }
+    }
 
     function humanizePrice(val: number, precision = 1): string {
         if (isNaN(val)) {
@@ -85,11 +92,11 @@
 <!-- @todo: custom grouping / per-table sorting -->
 <div bind:this={container} class="my-container pt-4 w-full">
     <div class="collapse collapse-plus bg-base-200">
-        <input bind:this={checkbox} type="checkbox" {name} on:change={handleToggle} />
+        <input bind:this={checkbox} type="checkbox" name="name" on:change={handleToggle} />
 
         <h1 class="collapse-title flex gap-3">
             <span class="min-w-11 text-right">[{data.length}]</span>
-            <span>{data[0].name}</span>
+            <span>{label}</span>
         </h1>
 
         <div class="collapse-content min-w-0">
