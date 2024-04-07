@@ -4,7 +4,7 @@
     import { getThemeContext } from './theme-context'
     import ThemePicker from './theme-picker.svelte'
 
-    const { theme, isDarkTheme } = getThemeContext()
+    const { isDarkTheme } = getThemeContext()
     $: iconVariant = $isDarkTheme ? ('dark' as const) : ('light' as const)
 </script>
 

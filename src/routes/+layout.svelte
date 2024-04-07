@@ -5,6 +5,6 @@
     const { theme } = setThemeContext()
 </script>
 
-<div class="min-h-full" data-theme={$theme.toLowerCase()}>
+<div class="h-full" data-theme={$theme.toLowerCase()}>
     <slot />
 </div>

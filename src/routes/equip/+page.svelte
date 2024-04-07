@@ -79,7 +79,7 @@
     }
 </script>
 
-<div class="min-h-full flex flex-col">
+<div class="h-full overflow-auto flex flex-col">
     <div class="p-4 pt-8 flex flex-col items-center">
         <SearchBar />
 
