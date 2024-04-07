@@ -26,7 +26,7 @@
 
     const value = derived([form, unitValue], ([$form, $multValue]) => {
         const current = $form[controlName]
-        return Math.floor(current / $multValue)
+        return current / $multValue
     })
 
     function handlePriceChange() {

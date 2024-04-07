@@ -2,6 +2,7 @@
     import { getEquipFormContext } from '../form-context/context'
 
     export let variant: 'min' | 'max'
+    export let autofocus = false
 
     const label = variant === 'min' ? 'From' : 'To'
     const monthControlName = variant === 'min' ? 'min_date_month' : 'max_date_month'
@@ -18,6 +19,7 @@
             <select
                 use:register={monthControlName}
                 name={monthControlName}
+                {autofocus}
                 class="select select-bordered w-full max-w-[6rem]"
             >
                 <option value="0">Jan</option>

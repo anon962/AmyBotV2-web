@@ -14,3 +14,7 @@ html {
 input::placeholder {
     opacity: 0.6;
 }
+
+button {
+    text-transform: uppercase;
+}

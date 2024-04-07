@@ -21,7 +21,7 @@
     }
 </script>
 
-<!-- @todo loading skeleton -->
+<!-- @todo: loading skeleton -->
 <div class="flex flex-col items-center p-4 pt-8">
     <SearchBar />
 
@@ -36,3 +36,5 @@
         {/each}
     {/if}
 </div>
+
+<!-- @todo: footer (source, discord) -->

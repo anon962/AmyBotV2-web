@@ -1,93 +1,140 @@
 <script lang="ts">
-    import { formToParams, getEquipFormContext } from '../form-context/context'
+    import { onDestroy, onMount } from 'svelte'
+    import { DEFAULT_EQUIP_FORM, formToParams, getEquipFormContext } from '../form-context/context'
     import { getEquipUrlContext } from '../url-context'
     import MonthYearInput from './month-year-input.svelte'
     import PriceInput from './price-input.svelte'
 
+    export let dialogEl: HTMLDialogElement
+
     let closeButton: HTMLButtonElement
 
     const { setParams } = getEquipUrlContext()
-    const { form, register } = getEquipFormContext()
+    const { form, formInitial, register, setValue } = getEquipFormContext()
+
+    // Parent component sets appends hash to url on dialog open
+    // This lets us detect when the back button is pressed (which clears the hash)
+    // This polls for that change and closes the dialog when it happens
+    let urlSubId: number = 0
+    onMount(() => {
+        urlSubId = setInterval(() => {
+            if (!window.location.hash) {
+                closeWithoutSubmit()
+            }
+        })
+    })
+    onDestroy(() => {
+        clearInterval(urlSubId)
+    })
+
+    function closeWithoutSubmit() {
+        setValue(formInitial)
+
+        dialogEl.close()
+    }
 
     function handleSubmit() {
-        closeButton.click()
-
         const update = formToParams($form)
         setParams(update)
+
+        dialogEl.close()
+    }
+
+    function handleClear() {
+        setValue(DEFAULT_EQUIP_FORM)
+    }
+
+    function handleReset() {
+        setValue(formInitial)
     }
 </script>
 
-<div class="container modal-box">
-    <form on:submit|preventDefault={handleSubmit} class="flex flex-col">
-        <!-- Equip name -->
-        <div class="input-container">
-            <label for="name" class="input-label">Equip Name</label>
-
-            <input
-                use:register={'name'}
-                class="grow input input-bordered"
-                name="name"
-                type="text"
-                placeholder="peerl heimd oak"
-            />
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Date -->
-        <div class="two-col-grid">
-            <MonthYearInput variant="min" />
-            <MonthYearInput variant="max" />
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Price -->
-        <div class="two-col-grid">
-            <PriceInput variant="min" />
-            <PriceInput variant="max" />
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- User -->
-        <div class="two-col-grid">
+<div class="container modal-box p-0 h-max max-h-[80vh] max-w-[80vw] md:max-w-[50rem]">
+    <form on:submit|preventDefault={handleSubmit} class="h-max max-h-[80vh] flex flex-col">
+        <!-- Form inputs -->
+        <div class="min-h-0 py-4 px-6 overflow-auto flex flex-col">
+            <!-- Equip name -->
             <div class="input-container">
-                <label for="buyer" class="input-label">Buyer</label>
+                <label for="name" class="input-label">Equip Name</label>
+
                 <input
-                    use:register={'buyer'}
-                    name="buyer"
+                    use:register={'name'}
+                    class="grow input input-bordered"
+                    name="name"
                     type="text"
-                    placeholder="프레이"
-                    class="input input-bordered grow min-w-0"
+                    placeholder="peerl heimd oak"
                 />
             </div>
 
-            <div class="input-container">
-                <label for="seller" class="input-label">Seller</label>
-                <input
-                    use:register={'seller'}
-                    name="seller"
-                    type="text"
-                    placeholder="tenboro"
-                    class="input input-bordered grow min-w-0"
-                />
+            <div class="divider"></div>
+
+            <!-- Date -->
+            <div class="two-col-grid">
+                <MonthYearInput variant="min" autofocus={true} />
+                <MonthYearInput variant="max" />
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Price -->
+            <div class="two-col-grid">
+                <PriceInput variant="min" />
+                <PriceInput variant="max" />
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- User -->
+            <div class="two-col-grid">
+                <div class="input-container">
+                    <label for="buyer" class="input-label">Buyer</label>
+                    <input
+                        use:register={'buyer'}
+                        name="buyer"
+                        type="text"
+                        placeholder="프레이"
+                        class="input input-bordered grow min-w-0"
+                    />
+                </div>
+
+                <div class="input-container">
+                    <label for="seller" class="input-label">Seller</label>
+                    <input
+                        use:register={'seller'}
+                        name="seller"
+                        type="text"
+                        placeholder="tenboro"
+                        class="input input-bordered grow min-w-0"
+                    />
+                </div>
             </div>
         </div>
 
-        <div class="divider"></div>
+        <!-- Action buttons -->
+        <footer class="p-4 border-t-2 border-base-300 flex justify-between gap-2 xs:gap-4">
+            <button on:click={() => handleReset()} type="button" class="btn btn-outline">
+                Reset
+            </button>
 
-        <button class="btn btn-primary">Submit</button>
+            <button on:click={() => handleClear()} type="button" class="btn btn-outline">
+                Clear
+            </button>
+
+            <span class="flex-grow hidden xs:block"></span>
+
+            <button class="btn btn-primary">Submit</button>
+        </footer>
     </form>
 </div>
 
+<!-- Click backdrop can also close dialog -->
 <form method="dialog" class="modal-backdrop">
-    <button bind:this={closeButton}>close</button>
+    <button bind:this={closeButton} on:click={closeWithoutSubmit}>close</button>
 </form>
 
 <style lang="postcss">
     .container :global(.input-container) {
-        @apply flex flex-col gap-2;
+        @apply flex flex-col gap-1;
     }
 
     .container :global(.input-label) {
@@ -96,10 +143,19 @@
     }
 
     .divider {
-        @apply py-4;
+        @apply py-3;
     }
 
     .two-col-grid {
-        @apply grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-12;
+        @apply grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-4 md:gap-12;
+    }
+
+    .btn {
+        min-width: 4rem;
+        max-width: 8rem;
+        flex-grow: 1;
+
+        height: 2.5rem;
+        min-height: 0;
     }
 </style>

@@ -4,7 +4,7 @@
     import { formToParams, setEquipFormContext } from './form-context/context'
     import { getEquipUrlContext } from './url-context'
 
-    let dialog: HTMLDialogElement
+    let dialogEl: HTMLDialogElement
 
     const { params, setParams } = getEquipUrlContext()
     const { form, register } = setEquipFormContext($params)
@@ -13,8 +13,24 @@
         const update = formToParams($form)
         setParams(update)
     }
+
+    function handleDialogOpen() {
+        dialogEl.showModal()
+
+        // Add history entry with hash so we can detect when back button is pressed and close the dialog
+        window.location.hash = ''
+        window.history.pushState({}, '', `#hash-for-mobile-back-button`)
+    }
+
+    function handleDialogClose() {
+        // If user didn't exit with back button, the history entry we added (marked by the hash) needs to be removed
+        if (window.location.hash) {
+            window.history.back()
+        }
+    }
 </script>
 
+<!-- @todo: group options (item name, user) with default based on search params -->
 <form class="w-full max-w-[50rem]" on:submit|preventDefault={handleSubmit}>
     <label class="w-full px-0 input input-bordered input-primary flex gap-2 items-center">
         <input
@@ -27,7 +43,7 @@
 
         <div class="p-1 h-full">
             <button
-                on:click|preventDefault={() => dialog.showModal()}
+                on:click|preventDefault={handleDialogOpen}
                 type="button"
                 class="btn btn-sm btn-ghost h-full"
             >
@@ -37,6 +53,6 @@
     </label>
 </form>
 
-<dialog bind:this={dialog} class="modal">
-    <EquipSearchDialog />
+<dialog bind:this={dialogEl} on:close={handleDialogClose} class="modal">
+    <EquipSearchDialog {dialogEl} />
 </dialog>

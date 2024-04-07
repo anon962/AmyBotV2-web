@@ -39,9 +39,11 @@ export interface EquipForm {
 
 export type EquipFormValue = {
     form: Readable<EquipForm>
+    formInitial: Readonly<EquipForm>
     controls: EquipFormControls
 
     register: (input: FormInput, name: keyof EquipForm) => void
+    setValue: (value: EquipForm) => void
     destroy: () => void
 }
 
@@ -59,11 +61,11 @@ export function setEquipFormContext(initial: EquipUrlParams) {
     ) as any
 
     // Load default values
-    const defaultForm = mergeDefaultWithUrlParams(initial)
-    const form = writable(defaultForm)
+    const formInitial = mergeDefaultWithUrlParams(initial)
+    const form = writable(formInitial)
 
     // Create context
-    const value = { form, controls, register, destroy }
+    const value = { form, formInitial, controls, register, setValue, destroy }
     setContext<EquipFormValue>(KEY, value)
 
     return value
@@ -84,6 +86,19 @@ export function setEquipFormContext(initial: EquipUrlParams) {
             ...current,
             [key]: parser.fromString(value)
         }))
+    }
+
+    function setValue(update: EquipForm) {
+        form.set({ ...update })
+
+        for (let key in DEFAULT_EQUIP_FORM) {
+            const k = key as keyof EquipForm
+            const parser = EQUIP_FORM_PARSERS[k]
+            const control = controls[k]
+
+            // @ts-ignore
+            control.setValue(parser.toString(update[k]))
+        }
     }
 
     function destroy() {
