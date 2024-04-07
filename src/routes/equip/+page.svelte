@@ -86,18 +86,6 @@
         <div class="divider mb-2"></div>
 
         <div class="my-list w-full flex flex-col">
-            <div class="w-full flex justify-end gap-2">
-                <select
-                    name="group-by"
-                    class="select select-bordered select-xs"
-                    bind:value={$groupCriteria}
-                >
-                    <option value="name">Group by equip name</option>
-                    <option value="seller">Group by seller</option>
-                    <option value="buyer">Group by buyer</option>
-                </select>
-            </div>
-
             {#if $navigating || 0}
                 <div class="h-full w-full flex flex-col gap-4 pt-4">
                     {#each range(12) as _}
@@ -113,6 +101,20 @@
             {:else if !data.initEquips.length}
                 No equips found
             {:else}
+                <!-- Group-by input -->
+                <div class="w-full flex justify-end gap-2">
+                    <select
+                        name="group-by"
+                        class="select select-bordered select-xs"
+                        bind:value={$groupCriteria}
+                    >
+                        <option value="name">Group by equip name</option>
+                        <option value="seller">Group by seller</option>
+                        <option value="buyer">Group by buyer</option>
+                    </select>
+                </div>
+                
+                <!-- Equip list -->
                 {#each groupBy(data.initEquips, $accessor) as grp}
                     <EquipTable data={grp} label={$accessor(grp[0])} />
                 {/each}
