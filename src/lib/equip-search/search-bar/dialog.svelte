@@ -65,7 +65,7 @@
     })
 </script>
 
-<div class="container modal-box p-0 h-max max-h-[80vh] max-w-[80vw] md:max-w-[50rem]">
+<div class="my-container modal-box p-0 h-max max-h-[80vh] max-w-[80vw] md:max-w-[50rem]">
     <form on:submit|preventDefault={handleSubmit} class="h-max max-h-[80vh] flex flex-col">
         <!-- Form inputs -->
         <div class="min-h-0 py-4 px-6 overflow-auto flex flex-col">
@@ -163,11 +163,11 @@
 </form>
 
 <style lang="postcss">
-    .container :global(.input-container) {
+    .my-container :global(.input-container) {
         @apply flex flex-col gap-1;
     }
 
-    .container :global(.input-label) {
+    .my-container :global(.input-label) {
         opacity: 0.65;
         font-weight: bold;
     }

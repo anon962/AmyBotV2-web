@@ -36,8 +36,6 @@
                 <option value="11">Dec</option>
             </select>
 
-            <!-- <span class="w-[0.5rem] h-[1px] mx-2 bg-base-content"></span> -->
-
             <input
                 use:register={yearControlName}
                 class="input input-bordered w-[5rem]"

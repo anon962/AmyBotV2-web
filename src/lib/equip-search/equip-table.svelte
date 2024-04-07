@@ -83,7 +83,7 @@
 
 <!-- @todo: rows should be sortable -->
 <!-- @todo: custom grouping / per-table sorting -->
-<div bind:this={container} class="container pt-4 w-full">
+<div bind:this={container} class="my-container pt-4 w-full">
     <div class="collapse collapse-plus bg-base-200">
         <input bind:this={checkbox} type="checkbox" {name} on:change={handleToggle} />
 
@@ -98,7 +98,7 @@
                     <thead>
                         <tr class="bg-base-200">
                             <!-- Only the price header should be stickied, so it should be the only <th> -->
-                            <th class="text-end max-w-content bg-inherit">Price</th>
+                            <th class="text-end w-full bg-inherit">Price</th>
                             <td>Stats</td>
                             <td>Level</td>
                             <td>Link</td>
@@ -113,7 +113,7 @@
                     <tbody>
                         {#each dataSorted as eq}
                             <tr>
-                                <th class="text-end max-w-content">
+                                <th class="text-end w-full">
                                     {#if eq.bid_link}
                                         <a class="link" href={eq.bid_link ?? ''}>
                                             {humanizePrice(eq.price)}
@@ -139,8 +139,8 @@
                                         {humanizeAuction(eq.auction)}
                                     </a>
                                 </td>
-                                <td>{eq.buyer ?? '-'}</td>
-                                <td>{eq.seller}</td>
+                                <td class="whitespace-pre">{eq.buyer ?? '-'}</td>
+                                <td class="whitespace-pre">{eq.seller}</td>
                                 <td>{eq.key.slice(0, 4)}</td>
                             </tr>
                         {/each}
@@ -172,7 +172,7 @@
     }
 
     /* Shorten animation so we can call scrollIntoView() earlier */
-    .container :global(*) {
+    .my-container :global(*) {
         transition-duration: 0.1s;
     }
 
@@ -195,5 +195,17 @@
     }
     .collapse:has(:checked) .collapse-content {
         display: block;
+    }
+
+    /* Prevent row-headers from growing in width */
+    th {
+        width: max-content;
+    }
+
+    /* Fix the first column header having different font size 
+     *(because first one is a <th> for the sticky functionality, others are <td>s) 
+     */
+    thead > tr > * {
+        @apply text-sm;
     }
 </style>
