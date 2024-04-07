@@ -1,9 +1,17 @@
 import { isEqual } from 'radash'
 import { type Readable, type Subscriber, type Unsubscriber } from 'svelte/store'
 
-export function getDate(t?: number): Date | null {
+export interface GetDateOpts {
+    isSeconds?: boolean
+}
+
+export function getDate(t?: number, opts?: GetDateOpts): Date | null {
     if (t === undefined || isNaN(t)) {
         return null
+    }
+
+    if (opts?.isSeconds) {
+        t *= 1000
     }
 
     const d = new Date(t)

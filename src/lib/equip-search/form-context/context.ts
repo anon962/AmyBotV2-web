@@ -119,10 +119,10 @@ export function getEquipFormContext() {
 function mergeDefaultWithUrlParams(params: EquipUrlParams): EquipForm {
     const d = DEFAULT_EQUIP_FORM
 
-    let min_date: Date | null = getDate(params.min_date)
+    let min_date: Date | null = getDate(params.min_date, { isSeconds: true })
     let min_date_month = min_date ? min_date.getMonth() + 1 : null
 
-    let max_date: Date | null = getDate(params.max_date)
+    let max_date: Date | null = getDate(params.max_date, { isSeconds: true })
     let max_date_month = max_date ? max_date.getMonth() + 1 : null
 
     return {

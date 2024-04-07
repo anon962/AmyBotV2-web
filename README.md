@@ -1,38 +1,35 @@
-# create-svelte
+A web version of the HV-bot: https://github.com/anon962/AmyBotV2
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+<img src="https://github.com/anon962/AmyBotV2-web/assets/80538688/e73c1ce4-5150-4b28-ab62-bf0a22ef5555">
 
-## Creating a project
+Other screenshots:
+[[2]](https://github.com/anon962/AmyBotV2-web/assets/80538688/f61c11a5-f794-42d4-8dc6-88bcfc2a14aa)
+[[3]](https://github.com/anon962/AmyBotV2-web/assets/80538688/4d10ef4a-6292-45cc-9781-323e38af0888)
 
-If you're seeing this, you've probably already done this step. Congrats!
+Features:
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+-   Search auction data for equips
+    -   Results can be grouped by item name / seller / buyer
+    -   Results can be addtionally filtered by name / seller / buyer / date / price
+-   Multiple light / dark themes to pick from
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### Setup
 
 ```bash
+git clone git@github.com:anon962/AmyBotV2-web.git
+cd AmyBotV2-web
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+### Deploy
 
-To create a production version of your app:
-
-```bash
-npm run build
+```
+cd AmyBotV2-web
+bash launch.sh
 ```
 
-You can preview the production build with `npm run preview`.
+### TODO
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+-   Lottery data
+-   Graphs (eg "price of ~50% edb staff over time")
