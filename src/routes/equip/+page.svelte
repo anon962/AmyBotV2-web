@@ -2,7 +2,7 @@
     import { navigating } from '$app/stores'
     import { type EquipWithAuctionType } from '$lib/equip-search/equip'
     import EquipTable from '$lib/equip-search/equip-table.svelte'
-    import SearchBar from '$lib/equip-search/search-bar.svelte'
+    import SearchBar from '$lib/equip-search/search-bar/search-bar.svelte'
     import { setEquipUrlContext } from '$lib/equip-search/url-context'
     import { group, sort } from 'radash'
     import type { PageData } from './$types'

@@ -125,14 +125,14 @@ function mergeDefaultWithUrlParams(params: EquipUrlParams): EquipForm {
         name: params.name?.join(' ') ?? d.name,
         min_date_month: min_date_month ?? d.min_date_month,
         min_date_year: min_date?.getFullYear() ?? d.min_date_year,
-        max_date_month: min_date_month ?? d.max_date_month,
+        max_date_month: max_date_month ?? d.max_date_month,
         max_date_year: max_date?.getFullYear() ?? d.max_date_year,
         min_price: params.min_price ?? d.min_price,
         max_price: params.max_price ?? d.max_price,
         seller: params.seller_partial ?? params.seller ?? d.seller,
-        seller_is_partial: params.seller_partial !== undefined,
+        seller_is_partial: params.seller_partial !== undefined ? true : d.seller_is_partial,
         buyer: params.buyer_partial ?? params.buyer ?? d.buyer,
-        buyer_is_partial: params.buyer_partial !== undefined
+        buyer_is_partial: params.buyer_partial !== undefined ? true : d.buyer_is_partial
     }
 }
 

@@ -1,9 +1,15 @@
 <script lang="ts">
     import { pushState } from '$app/navigation'
-    import FilterIcon from '$lib/icons/filter-icon.svelte'
-    import EquipSearchDialog from './filters-dialog/dialog.svelte'
-    import { formToParams, setEquipFormContext } from './form-context/context'
-    import { getEquipUrlContext } from './url-context'
+    import { isEqual } from 'radash'
+    import {
+        DEFAULT_EQUIP_FORM,
+        formToParams,
+        setEquipFormContext,
+        type EquipForm
+    } from '../form-context/context'
+    import { getEquipUrlContext } from '../url-context'
+    import DialogIcon from './dialog-icon.svelte'
+    import EquipSearchDialog from './dialog.svelte'
 
     let dialogEl: HTMLDialogElement
 
@@ -19,7 +25,12 @@
         dialogEl.showModal()
 
         // Add history entry with hash so we can detect when back button is pressed and close the dialog
-        pushState('#hash-for-mobile-back-button', {})
+        pushState('#hash-for-back-button', {})
+    }
+
+    // Compare current form value with default but exclude certain props
+    function formHasChanges(current: EquipForm): boolean {
+        return !isEqual({ ...current, name: undefined }, { ...DEFAULT_EQUIP_FORM, name: undefined })
     }
 </script>
 
@@ -40,7 +51,7 @@
                 type="button"
                 class="btn btn-sm btn-ghost h-full"
             >
-                <FilterIcon />
+                <DialogIcon active={formHasChanges($form)} />
             </button>
         </div>
     </label>
