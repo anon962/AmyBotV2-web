@@ -38,7 +38,7 @@
 
             <input
                 use:register={yearControlName}
-                class="input input-bordered w-[5rem]"
+                class="input input-bordered w-[6rem]"
                 name={yearControlName}
                 type="number"
                 min="2016"

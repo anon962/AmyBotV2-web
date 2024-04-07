@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-    type Column = 'price' | 'level' | 'date' | 'auction' | 'buyer' | 'seller' | 'id'
+    type Column = 'price' | 'name' | 'level' | 'date' | 'auction' | 'buyer' | 'seller' | 'id'
     type ActiveSort = { col: Column; type: 'asc' | 'desc' }
 
     type EquipAccessor<T> = (eq: EquipWithAuctionType) => T
@@ -14,6 +14,9 @@
 
     export let data: EquipWithAuctionType[]
     export let label: string
+    export let showEquipName = true
+    export let showSeller = true
+    export let showBuyer = true
 
     let container: HTMLElement
     let checkbox: HTMLInputElement
@@ -29,6 +32,7 @@
     }
 
     // Sort data
+    // @todo: both this comp and +page do accessor stuff, can it be centralized?
     $: {
         let accessor: EquipAccessor<string> | EquipAccessor<number>
         const desc = $activeSort === null || $activeSort.type === 'desc'
@@ -45,6 +49,10 @@
                 break
 
             // strings
+            case 'name':
+                accessor = (eq) => eq.name
+                dataSorted = alphabetical(data, accessor, $activeSort.type)
+                break
             case 'auction':
                 accessor = (eq) => humanizeAuction(eq.auction)
                 dataSorted = alphabetical(data, accessor, $activeSort.type)
@@ -177,6 +185,7 @@
                 <table class="table table-zebra table-sm md:table-md table-pin-rows table-pin-cols">
                     <thead>
                         <tr class="bg-base-200">
+                            <!-- @todo: can these column header / content definitions be packed away into a separate file? -->
                             <!-- Only the price header should be stickied, so it should be the only <th> -->
                             <SortHeader
                                 tag="th"
@@ -186,6 +195,16 @@
                             >
                                 Price
                             </SortHeader>
+
+                            {#if showEquipName}
+                                <SortHeader
+                                    tag="td"
+                                    {...getHeaderProps('name', $activeSort)}
+                                    on:click={() => handleSortChange('name')}
+                                >
+                                    Name
+                                </SortHeader>
+                            {/if}
 
                             <SortHeader
                                 tag="td"
@@ -215,21 +234,25 @@
                                 Auction
                             </SortHeader>
 
-                            <SortHeader
-                                tag="td"
-                                {...getHeaderProps('buyer', $activeSort)}
-                                on:click={() => handleSortChange('buyer')}
-                            >
-                                Buyer
-                            </SortHeader>
+                            {#if showBuyer}
+                                <SortHeader
+                                    tag="td"
+                                    {...getHeaderProps('buyer', $activeSort)}
+                                    on:click={() => handleSortChange('buyer')}
+                                >
+                                    Buyer
+                                </SortHeader>
+                            {/if}
 
-                            <SortHeader
-                                tag="td"
-                                {...getHeaderProps('seller', $activeSort)}
-                                on:click={() => handleSortChange('seller')}
-                            >
-                                Seller
-                            </SortHeader>
+                            {#if showSeller}
+                                <SortHeader
+                                    tag="td"
+                                    {...getHeaderProps('seller', $activeSort)}
+                                    on:click={() => handleSortChange('seller')}
+                                >
+                                    Seller
+                                </SortHeader>
+                            {/if}
 
                             <SortHeader
                                 tag="td"
@@ -258,6 +281,10 @@
                                     {/if}
                                 </th>
 
+                                {#if showEquipName}
+                                    <td class="whitespace-pre">{eq.name}</td>
+                                {/if}
+
                                 <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
 
                                 <td>{eq.level}</td>
@@ -278,9 +305,13 @@
                                     </a>
                                 </td>
 
-                                <td class="whitespace-pre">{eq.buyer ?? '-'}</td>
+                                {#if showBuyer}
+                                    <td class="whitespace-pre">{eq.buyer ?? '-'}</td>
+                                {/if}
 
-                                <td class="whitespace-pre">{eq.seller}</td>
+                                {#if showSeller}
+                                    <td class="whitespace-pre">{eq.seller}</td>
+                                {/if}
 
                                 <td>{eq.key.slice(0, 4)}</td>
 

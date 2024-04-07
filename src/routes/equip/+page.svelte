@@ -113,10 +113,16 @@
                         <option value="buyer">Group by buyer</option>
                     </select>
                 </div>
-                
+
                 <!-- Equip list -->
                 {#each groupBy(data.initEquips, $accessor) as grp}
-                    <EquipTable data={grp} label={$accessor(grp[0])} />
+                    <EquipTable
+                        data={grp}
+                        label={$accessor(grp[0])}
+                        showEquipName={$groupCriteria !== 'name'}
+                        showSeller={$groupCriteria !== 'seller'}
+                        showBuyer={$groupCriteria !== 'buyer'}
+                    />
                 {/each}
             {/if}
         </div>
