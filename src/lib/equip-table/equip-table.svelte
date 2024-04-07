@@ -1,7 +1,16 @@
+<script lang="ts" context="module">
+    type Column = 'price' | 'level' | 'date' | 'auction' | 'buyer' | 'seller' | 'id'
+    type ActiveSort = { col: Column; type: 'asc' | 'desc' }
+
+    type EquipAccessor<T> = (eq: EquipWithAuctionType) => T
+</script>
+
 <script lang="ts">
     import { getDate } from '$lib/utils'
-    import { sort } from 'radash'
-    import type { EquipWithAuctionType } from './equip'
+    import { alphabetical, sort } from 'radash'
+    import { writable } from 'svelte/store'
+    import type { EquipWithAuctionType } from '../equip-search/equip'
+    import SortHeader from './sort-header.svelte'
 
     export let data: EquipWithAuctionType[]
     export let label: string
@@ -9,12 +18,54 @@
     let container: HTMLElement
     let checkbox: HTMLInputElement
 
-    $: dataSorted = sort(data, (eq) => eq.price, true)
+    let activeSort = writable(null as ActiveSort | null)
+    let dataSorted = data
 
     // Collapse on data change (ie user changed grouping criteria)
     $: {
         if (data && checkbox?.checked) {
             checkbox.click()
+        }
+    }
+
+    // Sort data
+    $: {
+        let accessor: EquipAccessor<string> | EquipAccessor<number>
+        const desc = $activeSort === null || $activeSort.type === 'desc'
+
+        switch ($activeSort?.col) {
+            // numbers
+            case 'level':
+                accessor = (eq) => eq.level
+                dataSorted = sort(data, accessor, desc)
+                break
+            case 'date':
+                accessor = (eq) => eq.auction.end_time ?? eq.auction.start_time
+                dataSorted = sort(data, accessor, desc)
+                break
+
+            // strings
+            case 'auction':
+                accessor = (eq) => humanizeAuction(eq.auction)
+                dataSorted = alphabetical(data, accessor, $activeSort.type)
+                break
+            case 'buyer':
+                accessor = (eq) => eq.buyer
+                dataSorted = alphabetical(data, accessor, $activeSort.type)
+                break
+            case 'seller':
+                accessor = (eq) => eq.seller
+                dataSorted = alphabetical(data, accessor, $activeSort.type)
+                break
+            case 'id':
+                accessor = (eq) => eq.key
+                dataSorted = alphabetical(data, accessor, $activeSort.type)
+                break
+
+            default:
+                accessor = (eq) => eq.price
+                dataSorted = sort(data, accessor, desc)
+                break
         }
     }
 
@@ -86,10 +137,33 @@
             container.scrollIntoView({ behavior: 'smooth' })
         }, 100)
     }
+
+    function handleSortChange(col: Column) {
+        // If different column, start with desc
+        if ($activeSort?.col !== col) {
+            $activeSort = { col, type: 'desc' }
+            return
+        }
+
+        // Else same column, so cycle between sort types
+        switch ($activeSort?.type) {
+            case 'desc':
+                $activeSort = { col, type: 'asc' }
+                return
+            case 'asc':
+                $activeSort = null
+                return
+        }
+    }
+
+    function getHeaderProps(col: Column, $activeSort: ActiveSort | null) {
+        return {
+            state: $activeSort?.col === col ? $activeSort.type : null
+        }
+    }
 </script>
 
 <!-- @todo: rows should be sortable -->
-<!-- @todo: custom grouping / per-table sorting -->
 <div bind:this={container} class="my-container pt-4 w-full">
     <div class="collapse collapse-plus bg-base-200">
         <input bind:this={checkbox} type="checkbox" name="name" on:change={handleToggle} />
@@ -105,15 +179,68 @@
                     <thead>
                         <tr class="bg-base-200">
                             <!-- Only the price header should be stickied, so it should be the only <th> -->
-                            <th class="text-end w-full bg-inherit">Price</th>
+                            <SortHeader
+                                tag="th"
+                                classes="text-end bg-inherit"
+                                {...getHeaderProps('price', $activeSort)}
+                                on:click={() => handleSortChange('price')}
+                            >
+                                Price
+                            </SortHeader>
+
+                            <SortHeader
+                                tag="td"
+                                {...getHeaderProps('level', $activeSort)}
+                                on:click={() => handleSortChange('level')}
+                            >
+                                Level
+                            </SortHeader>
+
                             <td>Stats</td>
-                            <td>Level</td>
+
                             <td>Link</td>
-                            <td>Date</td>
-                            <td>Auction</td>
-                            <td>Buyer</td>
-                            <td>Seller</td>
-                            <td>ID</td>
+
+                            <SortHeader
+                                tag="td"
+                                {...getHeaderProps('date', $activeSort)}
+                                on:click={() => handleSortChange('date')}
+                            >
+                                Date
+                            </SortHeader>
+
+                            <SortHeader
+                                tag="td"
+                                {...getHeaderProps('auction', $activeSort)}
+                                on:click={() => handleSortChange('auction')}
+                            >
+                                Auction
+                            </SortHeader>
+
+                            <SortHeader
+                                tag="td"
+                                {...getHeaderProps('buyer', $activeSort)}
+                                on:click={() => handleSortChange('buyer')}
+                            >
+                                Buyer
+                            </SortHeader>
+
+                            <SortHeader
+                                tag="td"
+                                {...getHeaderProps('seller', $activeSort)}
+                                on:click={() => handleSortChange('seller')}
+                            >
+                                Seller
+                            </SortHeader>
+
+                            <SortHeader
+                                tag="td"
+                                {...getHeaderProps('id', $activeSort)}
+                                on:click={() => handleSortChange('id')}
+                            >
+                                ID
+                            </SortHeader>
+
+                            <td class="w-full"></td>
                         </tr>
                     </thead>
 
@@ -131,24 +258,34 @@
                                         ({humanizePrice(eq.next_bid)})
                                     {/if}
                                 </th>
+
                                 <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
+
                                 <td>{eq.level}</td>
+
                                 <td>
                                     <a class="link" href={getEquipLink(eq)} target="_blank">
                                         Link
                                     </a>
                                 </td>
+
                                 <td class="whitespace-pre">
                                     {humanizeDate(eq.auction.end_time ?? eq.auction.start_time)}
                                 </td>
+
                                 <td>
                                     <a class="link" href={getThreadLink(eq.id_auction)}>
                                         {humanizeAuction(eq.auction)}
                                     </a>
                                 </td>
+
                                 <td class="whitespace-pre">{eq.buyer ?? '-'}</td>
+
                                 <td class="whitespace-pre">{eq.seller}</td>
+
                                 <td>{eq.key.slice(0, 4)}</td>
+
+                                <td class="w-full"></td>
                             </tr>
                         {/each}
                     </tbody>
@@ -184,13 +321,13 @@
     }
 
     /* Reduce vertical padding */
-    td,
-    th {
+    .my-container :global(td),
+    .my-container :global(th) {
         @apply py-1;
     }
 
     /* Shrink table text */
-    table td {
+    table :global(td) {
         @apply text-xs md:text-sm;
     }
 
@@ -205,14 +342,14 @@
     }
 
     /* Prevent row-headers from growing in width */
-    th {
+    .my-container :global(th) {
         width: max-content;
     }
 
     /* Fix the first column header having different font size 
      *(because first one is a <th> for the sticky functionality, others are <td>s) 
      */
-    thead > tr > * {
+    thead > tr > :global(*) {
         @apply text-sm;
     }
 </style>

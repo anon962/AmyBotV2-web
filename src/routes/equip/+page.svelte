@@ -6,9 +6,9 @@
 <script lang="ts">
     import { navigating } from '$app/stores'
     import { type EquipWithAuctionType } from '$lib/equip-search/equip'
-    import EquipTable from '$lib/equip-search/equip-table.svelte'
     import SearchBar from '$lib/equip-search/search-bar/search-bar.svelte'
     import { setEquipUrlContext } from '$lib/equip-search/url-context'
+    import EquipTable from '$lib/equip-table/equip-table.svelte'
     import { draw, group, range, sort } from 'radash'
     import { derived, writable, type Writable } from 'svelte/store'
     import type { PageData } from './$types'
@@ -83,7 +83,7 @@
 
     <div class="divider mb-2"></div>
 
-    <div class="w-full max-w-[90vw] sm:max-w-[1024px] flex flex-col">
+    <div class="my-list w-full flex flex-col">
         <div class="w-full flex justify-end gap-2">
             <select
                 name="group-by"
@@ -119,3 +119,9 @@
 </div>
 
 <!-- @todo: footer (source, discord, theme selector(?)) -->
+
+<style lang="postcss">
+    .my-list {
+        max-width: min(1200px, 90vw);
+    }
+</style>
