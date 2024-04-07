@@ -92,7 +92,6 @@ export function setEquipFormContext(params: Readable<EquipUrlParams>) {
     }
 
     function setValue(update: EquipForm) {
-        console.log('setting', update)
         form.set({ ...update })
 
         for (let key in DEFAULT_EQUIP_FORM) {

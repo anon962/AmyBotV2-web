@@ -4,7 +4,7 @@
     import EquipTable from '$lib/equip-search/equip-table.svelte'
     import SearchBar from '$lib/equip-search/search-bar/search-bar.svelte'
     import { setEquipUrlContext } from '$lib/equip-search/url-context'
-    import { draw, group, sort } from 'radash'
+    import { draw, group, range, sort } from 'radash'
     import type { PageData } from './$types'
 
     export let data: PageData
@@ -51,8 +51,12 @@
 
     <div class="divider"></div>
 
-    {#if $navigating}
-        loading...
+    {#if $navigating || 0}
+        <div class="h-full w-full max-w-[90vw] flex flex-col gap-4 pt-4">
+            {#each range(12) as _}
+                <div class="skeleton h-[56px]"></div>
+            {/each}
+        </div>
     {:else if $isEmpty}
         <div class="text-center">
             No idea what to search?
@@ -60,7 +64,7 @@
             Click <a href={getRandomQuery()} class="link">here</a> for a random one!
         </div>
     {:else if !data.initEquips.length}
-        no results
+        No equips found
     {:else}
         <!-- @todo: handle zero results -->
         {#each groupByName(data.initEquips) as grp}
