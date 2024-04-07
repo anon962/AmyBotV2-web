@@ -5,11 +5,9 @@
     import PriceInput from './price-input.svelte'
 
     let closeButton: HTMLButtonElement
-    let minDateMonthEl: HTMLInputElement
-    let minDateYearEl: HTMLInputElement
 
     const { setParams } = getEquipUrlContext()
-    const { form, controls, register } = getEquipFormContext()
+    const { form, register } = getEquipFormContext()
 
     function handleSubmit() {
         closeButton.click()
@@ -37,7 +35,7 @@
         <div class="divider"></div>
 
         <!-- Date -->
-        <div class="grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-12">
+        <div class="two-col-grid">
             <MonthYearInput variant="min" />
             <MonthYearInput variant="max" />
         </div>
@@ -45,12 +43,37 @@
         <div class="divider"></div>
 
         <!-- Price -->
-        <div class="grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-12">
+        <div class="two-col-grid">
             <PriceInput variant="min" />
             <PriceInput variant="max" />
         </div>
 
+        <div class="divider"></div>
+
         <!-- User -->
+        <div class="two-col-grid">
+            <div class="input-container">
+                <label for="buyer" class="input-label">Buyer</label>
+                <input
+                    use:register={'buyer'}
+                    name="buyer"
+                    type="text"
+                    placeholder="프레이"
+                    class="input input-bordered grow min-w-0"
+                />
+            </div>
+
+            <div class="input-container">
+                <label for="seller" class="input-label">Seller</label>
+                <input
+                    use:register={'seller'}
+                    name="seller"
+                    type="text"
+                    placeholder="tenboro"
+                    class="input input-bordered grow min-w-0"
+                />
+            </div>
+        </div>
 
         <div class="divider"></div>
 
@@ -74,5 +97,9 @@
 
     .divider {
         @apply py-4;
+    }
+
+    .two-col-grid {
+        @apply grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-12;
     }
 </style>
