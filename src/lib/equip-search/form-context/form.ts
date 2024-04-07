@@ -14,16 +14,15 @@ export class FormControl {
         inp.value = initial
         this.inputs.push(inp)
 
-        const onChange = () => this._onChange(inp)
+        const onChange = () => this.publishValue(inp.value, inp)
 
         inp.addEventListener('change', onChange)
         this.subSink.push(() => inp.removeEventListener('change', onChange))
     }
 
-    _onChange(source: FormInput) {
-        console.log('_onChange', source, source.value)
-        this.inputs.filter((inp) => inp !== source).forEach((inp) => (inp.value = source.value))
-        this.onChange(source.value)
+    publishValue(val: string, ignore?: FormInput) {
+        this.inputs.filter((inp) => inp !== ignore).forEach((inp) => (inp.value = val))
+        this.onChange(val)
     }
 
     destroy() {

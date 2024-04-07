@@ -2,6 +2,7 @@
     import { formToParams, getEquipFormContext } from '../form-context/context'
     import { getEquipUrlContext } from '../url-context'
     import MonthYearInput from './month-year-input.svelte'
+    import PriceInput from './price-input.svelte'
 
     let closeButton: HTMLButtonElement
     let minDateMonthEl: HTMLInputElement
@@ -19,7 +20,7 @@
 </script>
 
 <div class="container modal-box">
-    <form on:submit|preventDefault={handleSubmit} class="flex flex-col gap-4">
+    <form on:submit|preventDefault={handleSubmit} class="flex flex-col">
         <!-- Equip name -->
         <div class="input-container">
             <label for="name" class="input-label">Equip Name</label>
@@ -33,16 +34,27 @@
             />
         </div>
 
+        <div class="divider"></div>
+
         <!-- Date -->
-        <MonthYearInput />
+        <div class="grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-12">
+            <MonthYearInput variant="min" />
+            <MonthYearInput variant="max" />
+        </div>
+
+        <div class="divider"></div>
 
         <!-- Price -->
+        <div class="grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-12">
+            <PriceInput variant="min" />
+            <PriceInput variant="max" />
+        </div>
 
-        <!-- Buyer -->
+        <!-- User -->
 
-        <!-- Seller -->
+        <div class="divider"></div>
 
-        <button>Submit</button>
+        <button class="btn btn-primary">Submit</button>
     </form>
 </div>
 
@@ -51,14 +63,16 @@
 </form>
 
 <style lang="postcss">
-    .container {
-        & :global(.input-container) {
-            @apply flex flex-col gap-2;
-        }
+    .container :global(.input-container) {
+        @apply flex flex-col gap-2;
+    }
 
-        & :global(.input-label) {
-            opacity: 0.65;
-            font-weight: bold;
-        }
+    .container :global(.input-label) {
+        opacity: 0.65;
+        font-weight: bold;
+    }
+
+    .divider {
+        @apply py-4;
     }
 </style>

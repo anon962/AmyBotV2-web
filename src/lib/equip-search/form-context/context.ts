@@ -130,24 +130,16 @@ export function formToParams(form: EquipForm): EquipUrlParams {
         params.name = form.name.split(' ')
     }
 
-    // Form value for month is 1-indexed
-    const min_month = form.min_date_month - 1
-    const min_date = new Date(form.min_date_year, min_month, 1)
-
-    const default_min_month = d.min_date_month - 1
-    const default_min = new Date(d.min_date_year, default_min_month, 1)
-
+    const min_date = new Date(form.min_date_year, form.min_date_month, 1)
+    const default_min = new Date(d.min_date_year, d.min_date_month, 1)
     if (min_date.getTime() !== default_min.getTime()) {
         params.min_date = min_date.getTime()
     }
 
     // Month n + 1 with day 0 gets us the last day of month n
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
-    const max_month = form.max_date_month - 1
-    const max_date = new Date(form.max_date_year, max_month + 1, 0)
-
-    const default_max_month = d.max_date_month - 1
-    const default_max = new Date(d.max_date_year, default_max_month, 0)
+    const max_date = new Date(form.max_date_year, form.max_date_month, 0)
+    const default_max = new Date(d.max_date_year, d.max_date_month, 0)
 
     if (max_date.getTime() !== default_max.getTime()) {
         params.max_date = max_date.getTime()
@@ -176,12 +168,12 @@ export function formToParams(form: EquipForm): EquipUrlParams {
 
 export const DEFAULT_EQUIP_FORM = {
     name: '',
-    min_date_month: 1,
+    min_date_month: 0,
     min_date_year: 2016,
-    max_date_month: 12,
-    max_date_year: 9999,
+    max_date_month: 11,
+    max_date_year: 2099,
     min_price: 0,
-    max_price: Infinity,
+    max_price: 1_000_000_000,
     seller: '',
     seller_is_partial: true,
     buyer: '',

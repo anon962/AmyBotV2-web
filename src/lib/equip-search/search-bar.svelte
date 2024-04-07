@@ -40,9 +40,3 @@
 <dialog bind:this={dialog} class="modal">
     <EquipSearchDialog />
 </dialog>
-
-<style lang="postcss">
-    input::placeholder {
-        opacity: 0.6;
-    }
-</style>

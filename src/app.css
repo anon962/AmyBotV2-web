@@ -2,10 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
 html {
     @apply font-mono;
+}
+
+input::placeholder {
+    opacity: 0.6;
 }

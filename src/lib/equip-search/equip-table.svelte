@@ -82,6 +82,7 @@
 </script>
 
 <!-- @todo: rows should be sortable -->
+<!-- @todo: custom grouping / per-table sorting -->
 <div bind:this={container} class="container pt-4 w-full">
     <div class="collapse collapse-plus bg-base-200">
         <input bind:this={checkbox} type="checkbox" {name} on:change={handleToggle} />

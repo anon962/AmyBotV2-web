@@ -30,6 +30,7 @@
     {#if $navigating}
         loading...
     {:else}
+        <!-- @todo: handle zero results -->
         {#each groupByName(data.initEquips) as grp}
             <EquipTable data={grp} />
         {/each}
