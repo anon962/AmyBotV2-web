@@ -14,7 +14,7 @@
     let dialogEl: HTMLDialogElement
 
     const { params, setParams } = getEquipUrlContext()
-    const { form, register } = setEquipFormContext($params)
+    const { form, register } = setEquipFormContext(params)
 
     function handleSubmit() {
         const update = formToParams($form)

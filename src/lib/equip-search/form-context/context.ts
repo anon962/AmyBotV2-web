@@ -1,6 +1,6 @@
 import { getDate } from '$lib/utils'
 import { getContext, setContext } from 'svelte'
-import { get, writable, type Readable } from 'svelte/store'
+import { derived, get, writable, type Readable } from 'svelte/store'
 import type { EquipUrlParams } from '../url-context'
 import {
     BoolParser,
@@ -39,7 +39,7 @@ export interface EquipForm {
 
 export type EquipFormValue = {
     form: Readable<EquipForm>
-    formInitial: Readonly<EquipForm>
+    formInitial: Readable<Readonly<EquipForm>>
     controls: EquipFormControls
 
     register: (input: FormInput, name: keyof EquipForm) => void
@@ -51,7 +51,7 @@ export type EquipFormControls = Record<keyof EquipForm, FormControl>
 
 const KEY = 'equip-form'
 
-export function setEquipFormContext(initial: EquipUrlParams) {
+export function setEquipFormContext(params: Readable<EquipUrlParams>) {
     // Init controls for each form field
     const controls: EquipFormControls = Object.fromEntries(
         Object.keys(DEFAULT_EQUIP_FORM).map((key) => [
@@ -61,8 +61,11 @@ export function setEquipFormContext(initial: EquipUrlParams) {
     ) as any
 
     // Load default values
-    const formInitial = mergeDefaultWithUrlParams(initial)
-    const form = writable(formInitial)
+    const formInitial = derived(params, ($params) => mergeDefaultWithUrlParams($params))
+
+    // Re-init form on client-side navigation
+    const form = writable({ ...get(formInitial) })
+    const unsubFormInitial = formInitial.subscribe((update) => setValue(update))
 
     // Create context
     const value = { form, formInitial, controls, register, setValue, destroy }
@@ -89,6 +92,7 @@ export function setEquipFormContext(initial: EquipUrlParams) {
     }
 
     function setValue(update: EquipForm) {
+        console.log('setting', update)
         form.set({ ...update })
 
         for (let key in DEFAULT_EQUIP_FORM) {
@@ -104,6 +108,7 @@ export function setEquipFormContext(initial: EquipUrlParams) {
     function destroy() {
         for (let c of Object.values(controls)) {
             c.destroy()
+            unsubFormInitial()
         }
     }
 }

@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation'
 import { page } from '$app/stores'
+import { DerivedUniqueStore } from '$lib/utils'
 import { getContext, setContext } from 'svelte'
 import { derived, get, type Readable } from 'svelte/store'
 
@@ -18,7 +19,7 @@ export interface EquipUrlParams {
 export type EquipSearchValue = {
     params: Readable<Readonly<EquipUrlParams>>
     isEmpty: Readable<boolean>
-    raw: Readable<Readonly<URLSearchParams>>
+    rawParams: Readable<Readonly<URLSearchParams>>
 
     setParams: (params: EquipUrlParams) => void
 }
@@ -26,10 +27,15 @@ export type EquipSearchValue = {
 const KEY = 'equip-url'
 
 export function setEquipUrlContext() {
-    let params = derived(page, (pg) => readRawUrlParams(pg.url.searchParams))
+    const uniquePage = new DerivedUniqueStore(page)
+    let params = derived(uniquePage, (pg) => readRawUrlParams(pg.url.searchParams))
     let isEmpty = derived(params, (params) => Object.keys(params).length <= 0)
-    let raw = derived(params, (params) => setRawUrlParams(params, new URLSearchParams()))
-    setContext<EquipSearchValue>(KEY, { params, isEmpty, raw, setParams })
+    let rawParams = derived(params, (params) => setRawUrlParams(params, new URLSearchParams()))
+
+    const value = { params, isEmpty, rawParams, setParams }
+    setContext<EquipSearchValue>(KEY, value)
+
+    return value
 
     function setParams(params: EquipUrlParams) {
         const current = get(page).url
