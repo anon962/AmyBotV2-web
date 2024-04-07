@@ -1,5 +1,6 @@
 <script lang="ts">
     import { pushState } from '$app/navigation'
+    import XIcon from '$lib/icons/x-icon.svelte'
     import { isEqual } from 'radash'
     import {
         DEFAULT_EQUIP_FORM,
@@ -14,7 +15,7 @@
     let dialogEl: HTMLDialogElement
 
     const { params, setParams } = getEquipUrlContext()
-    const { form, register } = setEquipFormContext(params)
+    const { form, setValue, register } = setEquipFormContext(params)
 
     function handleSubmit() {
         const update = formToParams($form)
@@ -26,6 +27,10 @@
 
         // Add history entry with hash so we can detect when back button is pressed and close the dialog
         pushState('#hash-for-back-button', {})
+    }
+
+    function handleClear() {
+        setValue({ ...$form, name: '' })
     }
 
     // Compare current form value with default but exclude certain props
@@ -45,11 +50,21 @@
             placeholder="peerl heimd oak"
         />
 
-        <div class="p-1 h-full">
+        <div class="p-1 pr-3 h-full flex gap-1">
+            {#if $form.name}
+                <button
+                    on:click|preventDefault={handleClear}
+                    type="button"
+                    class="btn btn-sm btn-ghost btn-circle my-auto h-9 w-10"
+                >
+                    <XIcon />
+                </button>
+            {/if}
+
             <button
                 on:click|preventDefault={handleDialogOpen}
                 type="button"
-                class="btn btn-sm btn-ghost h-full"
+                class="btn btn-sm btn-ghost btn-circle my-auto h-9 w-10"
             >
                 <DialogIcon active={formHasChanges($form)} />
             </button>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import XIcon from '$lib/icons/x-icon.svelte'
     import { onDestroy, onMount } from 'svelte'
     import { DEFAULT_EQUIP_FORM, formToParams, getEquipFormContext } from '../form-context/context'
     import { getEquipUrlContext } from '../url-context'
@@ -44,6 +45,10 @@
         setValue($formInitial)
     }
 
+    function handleNameClear() {
+        setValue({ ...$form, name: '' })
+    }
+
     // Parent component sets appends hash to url on dialog open
     // This lets us detect when the back button is pressed (which clears the hash)
     // Here we poll for that change and close the dialog when it happens
@@ -68,13 +73,27 @@
             <div class="input-container">
                 <label for="name" class="input-label">Equip Name</label>
 
-                <input
-                    use:register={'name'}
-                    class="grow input input-bordered"
-                    name="name"
-                    type="text"
-                    placeholder="peerl heimd oak"
-                />
+                <label class="w-full px-0 input input-bordered flex gap-2 items-center">
+                    <input
+                        use:register={'name'}
+                        class="pl-4 grow"
+                        name="name"
+                        type="text"
+                        placeholder="peerl heimd oak"
+                    />
+
+                    {#if $form.name}
+                        <div class="pr-4 h-full flex items-center">
+                            <button
+                                on:click|preventDefault={handleNameClear}
+                                type="button"
+                                class="btn btn-sm btn-ghost btn-circle"
+                            >
+                                <XIcon />
+                            </button>
+                        </div>
+                    {/if}
+                </label>
             </div>
 
             <div class="divider"></div>
@@ -161,7 +180,7 @@
         @apply grid grid-rows-2 gap-4 xs:grid-rows-1 xs:grid-cols-2 xs:gap-4 md:gap-12;
     }
 
-    .btn {
+    footer .btn {
         min-width: 4rem;
         max-width: 8rem;
         flex-grow: 1;
