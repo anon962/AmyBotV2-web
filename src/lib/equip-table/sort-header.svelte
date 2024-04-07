@@ -20,6 +20,7 @@
             <slot />
 
             <span class="my-icon-container w-4">
+                <!-- @todo: can this be animated like how daisyui does swap? -->
                 {#if state === 'asc'}
                     <UpIcon />
                 {:else}

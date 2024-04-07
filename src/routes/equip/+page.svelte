@@ -9,6 +9,7 @@
     import SearchBar from '$lib/equip-search/search-bar/search-bar.svelte'
     import { setEquipUrlContext } from '$lib/equip-search/url-context'
     import EquipTable from '$lib/equip-table/equip-table.svelte'
+    import Footer from '$lib/footer.svelte'
     import { draw, group, range, sort } from 'radash'
     import { derived, writable, type Writable } from 'svelte/store'
     import type { PageData } from './$types'
@@ -78,47 +79,49 @@
     }
 </script>
 
-<div class="flex flex-col items-center p-4 pt-8">
-    <SearchBar />
+<div class="min-h-full flex flex-col">
+    <div class="p-4 pt-8 flex flex-col items-center">
+        <SearchBar />
 
-    <div class="divider mb-2"></div>
+        <div class="divider mb-2"></div>
 
-    <div class="my-list w-full flex flex-col">
-        <div class="w-full flex justify-end gap-2">
-            <select
-                name="group-by"
-                class="select select-bordered select-xs"
-                bind:value={$groupCriteria}
-            >
-                <option value="name">Group by equip name</option>
-                <option value="seller">Group by seller</option>
-                <option value="buyer">Group by buyer</option>
-            </select>
-        </div>
+        <div class="my-list w-full flex flex-col">
+            <div class="w-full flex justify-end gap-2">
+                <select
+                    name="group-by"
+                    class="select select-bordered select-xs"
+                    bind:value={$groupCriteria}
+                >
+                    <option value="name">Group by equip name</option>
+                    <option value="seller">Group by seller</option>
+                    <option value="buyer">Group by buyer</option>
+                </select>
+            </div>
 
-        {#if $navigating || 0}
-            <div class="h-full w-full flex flex-col gap-4 pt-4">
-                {#each range(12) as _}
-                    <div class="skeleton h-[56px]"></div>
+            {#if $navigating || 0}
+                <div class="h-full w-full flex flex-col gap-4 pt-4">
+                    {#each range(12) as _}
+                        <div class="skeleton h-[56px]"></div>
+                    {/each}
+                </div>
+            {:else if $isEmpty}
+                <div class="text-center">
+                    No idea what to search?
+                    <br />
+                    <a href={getRandomQuery()} class="link">Try a random search!</a>
+                </div>
+            {:else if !data.initEquips.length}
+                No equips found
+            {:else}
+                {#each groupBy(data.initEquips, $accessor) as grp}
+                    <EquipTable data={grp} label={$accessor(grp[0])} />
                 {/each}
-            </div>
-        {:else if $isEmpty}
-            <div class="text-center">
-                No idea what to search?
-                <br />
-                <a href={getRandomQuery()} class="link">Try a random search!</a>
-            </div>
-        {:else if !data.initEquips.length}
-            No equips found
-        {:else}
-            {#each groupBy(data.initEquips, $accessor) as grp}
-                <EquipTable data={grp} label={$accessor(grp[0])} />
-            {/each}
-        {/if}
+            {/if}
+        </div>
     </div>
-</div>
 
-<!-- @todo: footer (source, discord, theme selector(?)) -->
+    <Footer />
+</div>
 
 <style lang="postcss">
     .my-list {

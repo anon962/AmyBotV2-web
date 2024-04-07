@@ -163,7 +163,6 @@
     }
 </script>
 
-<!-- @todo: rows should be sortable -->
 <div bind:this={container} class="my-container pt-4 w-full">
     <div class="collapse collapse-plus bg-base-200">
         <input bind:this={checkbox} type="checkbox" name="name" on:change={handleToggle} />
