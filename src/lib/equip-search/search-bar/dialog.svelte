@@ -21,7 +21,7 @@
     }
 
     function resetAndClose() {
-        setValue(formInitial)
+        setValue($formInitial)
         closeDialog()
     }
 
@@ -41,7 +41,7 @@
     }
 
     function handleReset() {
-        setValue(formInitial)
+        setValue($formInitial)
     }
 
     // Parent component sets appends hash to url on dialog open

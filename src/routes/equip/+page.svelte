@@ -45,7 +45,6 @@
     }
 </script>
 
-<!-- @todo: loading skeleton -->
 <div class="flex flex-col items-center p-4 pt-8">
     <SearchBar />
 
@@ -61,12 +60,11 @@
         <div class="text-center">
             No idea what to search?
             <br />
-            Click <a href={getRandomQuery()} class="link">here</a> for a random one!
+            <a href={getRandomQuery()} class="link">Try a random search!</a>
         </div>
     {:else if !data.initEquips.length}
         No equips found
     {:else}
-        <!-- @todo: handle zero results -->
         {#each groupByName(data.initEquips) as grp}
             <EquipTable data={grp} />
         {/each}
