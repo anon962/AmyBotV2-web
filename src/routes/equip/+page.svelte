@@ -37,4 +37,4 @@
     {/if}
 </div>
 
-<!-- @todo: footer (source, discord) -->
+<!-- @todo: footer (source, discord, theme selector(?)) -->

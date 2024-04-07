@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { pushState } from '$app/navigation'
     import FilterIcon from '$lib/icons/filter-icon.svelte'
     import EquipSearchDialog from './filters-dialog/dialog.svelte'
     import { formToParams, setEquipFormContext } from './form-context/context'
@@ -18,15 +19,7 @@
         dialogEl.showModal()
 
         // Add history entry with hash so we can detect when back button is pressed and close the dialog
-        window.location.hash = ''
-        window.history.pushState({}, '', `#hash-for-mobile-back-button`)
-    }
-
-    function handleDialogClose() {
-        // If user didn't exit with back button, the history entry we added (marked by the hash) needs to be removed
-        if (window.location.hash) {
-            window.history.back()
-        }
+        pushState('#hash-for-mobile-back-button', {})
     }
 </script>
 
@@ -53,6 +46,6 @@
     </label>
 </form>
 
-<dialog bind:this={dialogEl} on:close={handleDialogClose} class="modal">
+<dialog bind:this={dialogEl} class="modal">
     <EquipSearchDialog {dialogEl} />
 </dialog>

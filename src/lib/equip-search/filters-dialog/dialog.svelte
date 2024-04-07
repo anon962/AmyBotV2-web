@@ -12,32 +12,28 @@
     const { setParams } = getEquipUrlContext()
     const { form, formInitial, register, setValue } = getEquipFormContext()
 
-    // Parent component sets appends hash to url on dialog open
-    // This lets us detect when the back button is pressed (which clears the hash)
-    // This polls for that change and closes the dialog when it happens
-    let urlSubId: number = 0
-    onMount(() => {
-        urlSubId = setInterval(() => {
-            if (!window.location.hash) {
-                closeWithoutSubmit()
-            }
-        })
-    })
-    onDestroy(() => {
-        clearInterval(urlSubId)
-    })
+    function closeDialog() {
+        // Pop the hash we added to history
+        window.history.back()
 
-    function closeWithoutSubmit() {
-        setValue(formInitial)
-
+        // Close dialog
         dialogEl.close()
+    }
+
+    function resetAndClose() {
+        setValue(formInitial)
+        closeDialog()
     }
 
     function handleSubmit() {
         const update = formToParams($form)
-        setParams(update)
 
-        dialogEl.close()
+        closeDialog()
+
+        // @jank: Navigating immediately after a history.back() doesn't work for some reason
+        setTimeout(() => {
+            setParams(update)
+        }, 50)
     }
 
     function handleClear() {
@@ -47,6 +43,21 @@
     function handleReset() {
         setValue(formInitial)
     }
+
+    // Parent component sets appends hash to url on dialog open
+    // This lets us detect when the back button is pressed (which clears the hash)
+    // Here we poll for that change and close the dialog when it happens
+    let urlSubId: number = 0
+    onMount(() => {
+        urlSubId = setInterval(() => {
+            if (!window.location.hash) {
+                dialogEl.close()
+            }
+        })
+    })
+    onDestroy(() => {
+        clearInterval(urlSubId)
+    })
 </script>
 
 <div class="container modal-box p-0 h-max max-h-[80vh] max-w-[80vw] md:max-w-[50rem]">
@@ -129,7 +140,7 @@
 
 <!-- Click backdrop can also close dialog -->
 <form method="dialog" class="modal-backdrop">
-    <button bind:this={closeButton} on:click={closeWithoutSubmit}>close</button>
+    <button bind:this={closeButton} on:click={resetAndClose}>close</button>
 </form>
 
 <style lang="postcss">

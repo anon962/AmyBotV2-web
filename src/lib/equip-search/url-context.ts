@@ -37,7 +37,7 @@ export function setEquipUrlContext() {
         const update = new URL(current.origin + current.pathname)
         setRawUrlParams(params, update.searchParams)
 
-        goto(update.href)
+        goto(update)
     }
 }
 
