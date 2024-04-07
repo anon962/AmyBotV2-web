@@ -1,5 +1,10 @@
 <script>
+    import { setThemeContext } from '$lib/theme-context'
     import '../app.css'
+
+    const { theme } = setThemeContext()
 </script>
 
-<slot />
+<div class="min-h-full" data-theme={$theme.toLowerCase()}>
+    <slot />
+</div>

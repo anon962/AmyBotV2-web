@@ -6,7 +6,7 @@
 
 <div class="relative" class:active>
     <div class="icon-container">
-        <FilterIcon />
+        <FilterIcon class="w-6 h-6" />
     </div>
 
     <div class="dot"></div>
@@ -17,8 +17,8 @@
         & .dot {
             /* Colored circle */
             @apply rounded-full bg-red-600;
-            height: 0.65rem;
-            width: 0.65rem;
+            height: 0.5rem;
+            width: 0.5rem;
 
             /* Overlayed at top-right corner */
             position: absolute;

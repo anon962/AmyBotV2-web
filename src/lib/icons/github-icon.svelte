@@ -1,10 +1,19 @@
+<!-- https://github.com/logos -->
+
 <script lang="ts">
     export let variant: 'dark' | 'light' = 'dark'
 
     $: fill = variant === 'dark' ? '#fff' : '#24292f'
 </script>
 
-<svg width="98" height="96" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" {...$$props}>
+<svg
+    width="98"
+    height="96"
+    viewBox="0 0 98 96"
+    xmlns="http://www.w3.org/2000/svg"
+    {...$$props}
+    {fill}
+>
     <path
         fill-rule="evenodd"
         clip-rule="evenodd"

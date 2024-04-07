@@ -43,7 +43,7 @@
     <label class="w-full px-0 input input-bordered input-primary flex gap-2 items-center">
         <input
             use:register={'name'}
-            class="pl-4 grow"
+            class="pl-4 grow min-w-0"
             name="name"
             type="text"
             placeholder="peerl heimd oak"
@@ -54,7 +54,7 @@
                 <button
                     on:click|preventDefault={handleClear}
                     type="button"
-                    class="btn btn-sm btn-ghost btn-circle my-auto h-9 w-10"
+                    class="btn btn-sm btn-ghost btn-circle my-auto"
                 >
                     <XIcon />
                 </button>
@@ -63,7 +63,7 @@
             <button
                 on:click|preventDefault={handleDialogOpen}
                 type="button"
-                class="btn btn-sm btn-ghost btn-circle my-auto h-9 w-10"
+                class="btn btn-sm btn-ghost btn-circle my-auto"
             >
                 <DialogIcon active={formHasChanges($form)} />
             </button>
@@ -74,3 +74,9 @@
 <dialog bind:this={dialogEl} class="modal">
     <EquipSearchDialog {dialogEl} />
 </dialog>
+
+<style lang="postcss">
+    .btn {
+        @apply w-7;
+    }
+</style>

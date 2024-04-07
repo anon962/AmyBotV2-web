@@ -11,5 +11,8 @@ export default {
             ...defaultTheme.screens
         }
     },
-    plugins: [daisyui]
+    plugins: [daisyui],
+    daisyui: {
+        themes: ['dark', 'light', 'black', 'dim', 'dracula', 'forest', 'nord', 'retro', 'valentine']
+    }
 } satisfies Config

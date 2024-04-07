@@ -122,11 +122,13 @@ export function setRawUrlParams(params: EquipUrlParams, url: URLSearchParams): U
     }
 
     if (params.min_date) {
-        url.set('min_date', params.min_date.toString())
+        let timestamp = Math.trunc(params.min_date / 1000).toString()
+        url.set('min_date', timestamp)
     }
 
     if (params.max_date) {
-        url.set('max_date', params.max_date.toString())
+        let timestamp = Math.trunc(params.max_date / 1000).toString()
+        url.set('max_date', timestamp)
     }
 
     if (params.min_price) {

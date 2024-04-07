@@ -122,7 +122,7 @@ function mergeDefaultWithUrlParams(params: EquipUrlParams): EquipForm {
     let min_date: Date | null = getDate(params.min_date)
     let min_date_month = min_date ? min_date.getMonth() + 1 : null
 
-    let max_date: Date | null = getDate(params.min_date)
+    let max_date: Date | null = getDate(params.max_date)
     let max_date_month = max_date ? max_date.getMonth() + 1 : null
 
     return {
