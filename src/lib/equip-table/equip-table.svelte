@@ -7,9 +7,9 @@
 
 <script lang="ts">
     import { getDate } from '$lib/utils'
-    import { alphabetical, sort } from 'radash'
+    import { alphabetical, isArray, sort } from 'radash'
     import { writable } from 'svelte/store'
-    import type { EquipWithAuctionType } from '../equip-search/equip'
+    import type { Equip, EquipWithAuctionType } from '../equip-search/equip'
     import SortHeader from './sort-header.svelte'
 
     export let data: EquipWithAuctionType[]
@@ -125,6 +125,15 @@
         let numberString = isNaN(number) ? '???' : number.toString().padStart(3, '0')
 
         return `${auction.type}${numberString}`
+    }
+
+    function humanizeStats(stats: Equip['stats']) {
+        if (isArray(stats)) {
+            return stats.join('\n')
+        } else {
+            // @todo: stats can be a object / dict for some reason
+            return ''
+        }
     }
 
     function getThreadLink(id_auction: string): string {
@@ -287,7 +296,9 @@
 
                                 <td>{eq.level}</td>
 
-                                <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
+                                <td class="min-w-content whitespace-pre">
+                                    {humanizeStats(eq.stats)}
+                                </td>
 
                                 <td>
                                     <a class="link" href={getEquipLink(eq)} target="_blank">
