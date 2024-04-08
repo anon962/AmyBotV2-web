@@ -285,9 +285,9 @@
                                     <td class="whitespace-pre">{eq.name}</td>
                                 {/if}
 
-                                <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
-
                                 <td>{eq.level}</td>
+
+                                <td class="min-w-content whitespace-pre">{eq.stats.join('\n')}</td>
 
                                 <td>
                                     <a class="link" href={getEquipLink(eq)} target="_blank">

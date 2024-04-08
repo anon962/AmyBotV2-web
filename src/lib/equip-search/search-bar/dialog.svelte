@@ -115,6 +115,7 @@
             <div class="divider"></div>
 
             <!-- User -->
+            <!-- @todo generic text input with clear button, maybe support the equip name usecase if possible -->
             <div class="two-col-grid">
                 <div class="input-container">
                     <label for="buyer" class="input-label">Buyer</label>

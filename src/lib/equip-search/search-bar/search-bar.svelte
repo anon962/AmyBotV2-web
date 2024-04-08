@@ -39,6 +39,7 @@
     }
 </script>
 
+<!-- @todo consider showing suggestions oninput, eg "st" suggests "... staff ..." -->
 <form class="w-full max-w-[50rem]" on:submit|preventDefault={handleSubmit}>
     <label class="w-full px-0 input input-bordered input-primary flex gap-2 items-center">
         <input
