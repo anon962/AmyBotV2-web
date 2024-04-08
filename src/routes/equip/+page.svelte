@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    type GroupCriteria = 'name' | 'buyer' | 'seller'
+    type GroupCriteria = 'name' | 'buyer' | 'seller' | 'all'
     type EquipAccessor = (eq: EquipWithAuctionType) => string
 </script>
 
@@ -20,6 +20,7 @@
 
     let groupCriteria: Writable<GroupCriteria> = writable('name')
     $: {
+        // Set default on new search
         if ($params.seller || $params.seller_partial) {
             $groupCriteria = 'seller'
         } else if ($params.buyer || $params.buyer_partial) {
@@ -75,10 +76,13 @@
                 return (eq) => eq.buyer
             case 'seller':
                 return (eq) => eq.seller
+            case 'all':
+                return () => $params.name?.join(' ') ?? 'Results'
         }
     }
 </script>
 
+<!-- @todo: export option -->
 <div class="h-full overflow-auto flex flex-col">
     <div class="p-4 pt-8 flex flex-col items-center">
         <SearchBar />
@@ -111,6 +115,7 @@
                         <option value="name">Group by equip name</option>
                         <option value="seller">Group by seller</option>
                         <option value="buyer">Group by buyer</option>
+                        <option value="all">Group all</option>
                     </select>
                 </div>
 
