@@ -215,6 +215,8 @@
                                 </SortHeader>
                             {/if}
 
+                            <td>Stats</td>
+
                             <SortHeader
                                 tag="td"
                                 {...getHeaderProps('level', $activeSort)}
@@ -222,8 +224,6 @@
                             >
                                 Level
                             </SortHeader>
-
-                            <td>Stats</td>
 
                             <td>Link</td>
 
@@ -294,11 +294,11 @@
                                     <td class="whitespace-pre">{eq.name}</td>
                                 {/if}
 
-                                <td>{eq.level}</td>
-
                                 <td class="min-w-content whitespace-pre">
                                     {humanizeStats(eq.stats)}
                                 </td>
+
+                                <td>{eq.level}</td>
 
                                 <td>
                                     <a class="link" href={getEquipLink(eq)} target="_blank">
