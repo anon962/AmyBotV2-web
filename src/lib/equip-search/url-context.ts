@@ -11,9 +11,9 @@ export interface EquipUrlParams {
     min_price?: number
     max_price?: number
     seller?: string
-    seller_partial?: string
+    seller_partial?: string[]
     buyer?: string
-    buyer_partial?: string
+    buyer_partial?: string[]
 }
 
 export type EquipSearchValue = {
@@ -100,7 +100,7 @@ export function readRawUrlParams(url: URLSearchParams): EquipUrlParams {
 
     val = url.get('seller_partial')
     if (val) {
-        params.seller_partial = val
+        params.seller_partial = val.split(',')
     }
 
     val = url.get('buyer')
@@ -110,7 +110,7 @@ export function readRawUrlParams(url: URLSearchParams): EquipUrlParams {
 
     val = url.get('buyer_partial')
     if (val) {
-        params.buyer_partial = val
+        params.buyer_partial = val.split(',')
     }
 
     return params

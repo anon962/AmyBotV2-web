@@ -125,6 +125,26 @@ function mergeDefaultWithUrlParams(params: EquipUrlParams): EquipForm {
     let max_date: Date | null = getDate(params.max_date, { isSeconds: true })
     let max_date_month = max_date ? max_date.getMonth() + 1 : null
 
+    let seller: EquipForm['seller']
+    let seller_is_partial: EquipForm['seller_is_partial']
+    if (params.seller_partial) {
+        seller = params.seller_partial.join(' ')
+        seller_is_partial = true
+    } else {
+        seller = params.seller ?? ''
+        seller_is_partial = false
+    }
+
+    let buyer: EquipForm['buyer']
+    let buyer_is_partial: EquipForm['buyer_is_partial']
+    if (params.buyer_partial) {
+        buyer = params.buyer_partial.join(' ')
+        buyer_is_partial = true
+    } else {
+        buyer = params.buyer ?? ''
+        buyer_is_partial = false
+    }
+
     return {
         name: params.name?.join(' ') ?? d.name,
         min_date_month: min_date_month ?? d.min_date_month,
@@ -133,10 +153,10 @@ function mergeDefaultWithUrlParams(params: EquipUrlParams): EquipForm {
         max_date_year: max_date?.getFullYear() ?? d.max_date_year,
         min_price: params.min_price ?? d.min_price,
         max_price: params.max_price ?? d.max_price,
-        seller: params.seller_partial ?? params.seller ?? d.seller,
-        seller_is_partial: params.seller_partial !== undefined ? true : d.seller_is_partial,
-        buyer: params.buyer_partial ?? params.buyer ?? d.buyer,
-        buyer_is_partial: params.buyer_partial !== undefined ? true : d.buyer_is_partial
+        seller,
+        seller_is_partial,
+        buyer,
+        buyer_is_partial
     }
 }
 
@@ -174,12 +194,20 @@ export function formToParams(form: EquipForm): EquipUrlParams {
 
     if (form.seller !== d.seller) {
         const key = form.seller_is_partial ? 'seller_partial' : 'seller'
-        params[key] = form.seller
+        if (key === 'seller_partial') {
+            params[key] = form.seller.split(/\s/)
+        } else {
+            params[key] = form.seller
+        }
     }
 
     if (form.buyer !== d.buyer) {
         const key = form.buyer_is_partial ? 'buyer_partial' : 'buyer'
-        params[key] = form.buyer
+        if (key === 'buyer_partial') {
+            params[key] = form.buyer.split(/\s/)
+        } else {
+            params[key] = form.buyer
+        }
     }
 
     return params
